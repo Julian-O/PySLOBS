@@ -4,3 +4,13 @@ tests/__pycache__/
 tests/token.txt
 
 pyslobs/slobs/__pycache__/
+
+.idea/
+
+build/
+
+dist/
+
+pyslobs/__pycache__/
+
+PySLOBS.egg-info/
