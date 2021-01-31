@@ -9,7 +9,12 @@ from .slobs.selectionservice import SelectionService
 from .slobs.sourcesservice import SourcesService
 from .slobs.streamingservice import StreamingService
 from .slobs.transitionsservice import TransitionsService
-from .slobs.typedefs import NotificationSubType, NotificationType, MonitoringType
+from .slobs.typedefs import (
+    NotificationSubType,
+    NotificationType,
+    MonitoringType,
+    TSceneNodeType,
+)
 
 __all__ = [
     "AuthenticationFailure",
@@ -25,5 +30,5 @@ __all__ = [
     "StreamingService",
     "TransitionsService",
     "NotificationSubType",
-    "NotificationType"
+    "NotificationType",
 ]

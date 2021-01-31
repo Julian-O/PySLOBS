@@ -1,5 +1,11 @@
-from typing import Optional
+from typing import Optional, Any
 from ..apibase import SlobsClass
+from .scenenode import (
+    create_scene_node_from_dict_INTERNAL,
+    create_scene_item_from_dict_INTERNAL,
+    create_scene_item_folder_from_dict_INTERNAL,
+    SceneNode,
+)
 
 
 class Scene(SlobsClass):
@@ -8,8 +14,9 @@ class Scene(SlobsClass):
         connection,
         resource_id: str,
         source_id: str,
+        id: str,
         name: str,
-        nodes: list[NotImplementedError],
+        nodes: list[SceneNode],
     ):
         super().__init__(connection, resource_id=resource_id, source_id=source_id)
 
@@ -17,7 +24,7 @@ class Scene(SlobsClass):
         # Warning may be out of date if changed on the server.
         # Use set_name to change
 
-        # TODO:  This should instantiate to respective SceneNode proxies.
+        self._id = id
         self._nodes = nodes
 
     def __str__(self):
@@ -30,6 +37,10 @@ class Scene(SlobsClass):
     @property
     def nodes(self):
         return self._nodes
+
+    @property
+    def id(self):
+        return self._id
 
     async def add_file(
         self, path, folder_id: Optional[str] = None
@@ -70,7 +81,16 @@ class Scene(SlobsClass):
     # async def getNode
     # async def getNodeByName
     # async def getNodes(refresh=True)
-    # async def getRootNodes
+    async def get_root_nodes(self):
+        response = await self._connection.command(
+            "getRootNodes", self._prepared_params()
+        )
+        print("Root nodes", response)
+        return [
+            create_scene_node_from_dict_INTERNAL(self._connection, node)
+            for node in response
+        ]
+
     # async def getSelection
     # async def getSource
 

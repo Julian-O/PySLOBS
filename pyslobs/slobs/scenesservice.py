@@ -1,5 +1,6 @@
 from ..apibase import SlobsService, Event
 from .scene import Scene
+from .scenenode import create_scene_node_from_dict_INTERNAL
 from .typedefs import ISceneModel
 
 
@@ -24,8 +25,10 @@ class ScenesService(SlobsService):
             source_id=json_dict["id"],
             # Names are sometimes missing. Fill in an empty name.
             name=json_dict.get("name", ""),
-            # TODO: Should convert nodes to list of ISceneNodeModel
-            nodes=["TBD"],
+            id=json_dict["id"],
+            nodes=[
+                create_scene_node_from_dict_INTERNAL(self._connection, node)
+                for node in json_dict["nodes"]],
         )
 
     async def active_scene(self):
