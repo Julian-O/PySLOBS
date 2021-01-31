@@ -70,7 +70,7 @@ class _SlobsWebSocket:
             except WebSocketTimeoutException:
                 LOGGER.debug("Retrying after timeout.")
             except OSError as e:
-                LOGGER.error("Network error? Retrying: %s", e)
+                LOGGER.warning("OSError received. Probably socket was closed. Retrying: %s", e)
                 time.sleep(1)  # To prevent busy-loop
         self.close()
         return None
@@ -217,9 +217,11 @@ class SlobsConnection:
         try:
             if "error" in response:
                 await queue.put(ProtocolError(response["error"]))
+                return
 
             if "result" not in response:
                 await queue.put(ProtocolError("No result found: %s" % response))
+                return
 
             result = response["result"] or {}
 
