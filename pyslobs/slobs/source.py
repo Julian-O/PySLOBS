@@ -3,6 +3,7 @@ from collections import namedtuple
 from typing import Optional, Any, Dict
 
 from ..apibase import SlobsClass
+from .factories import source_factory
 
 # These is unclearly defined.
 TObsFormData = str
@@ -122,14 +123,14 @@ class Source(SlobsClass):
 
     async def duplicate(self) -> Source:
         response = await self._connection.command("duplicate", self._prepared_params())
-        return self._create_source_from_dict(self._connection, response)
+        return source_factory(self._connection, response)
 
     async def get_model(self) -> ISourceModel:
         response = await self._connection.command("getModel", self._prepared_params())
         return ISourceModel(
             async_=response["async"],
             audio=response["audio"],
-            channel=response["channel"],
+            channel=response.get("channel", None),
             do_not_duplicate=response["doNotDuplicate"],
             height=response["height"],
             id=response["id"],
@@ -178,26 +179,3 @@ class Source(SlobsClass):
             "updateSettings", self._prepared_params([settings])
         )
         self._check_empty(response)
-
-    @staticmethod
-    def _create_source_from_dict(connection, json_dict):
-        # Should not be called by client, but is called by "friend" class
-        # SourceService.
-        return Source(
-            connection,
-            # resource_ids are missing after a deletion.
-            resource_id=json_dict.get("resourceId", None),
-            source_id=json_dict.get("sourceId", None),
-            async_=json_dict["async"],
-            audio=json_dict["audio"],
-            channel=json_dict.get("channel", None),
-            configurable=json_dict.get("configurable", None),
-            do_not_duplicate=json_dict["doNotDuplicate"],
-            height=json_dict["height"],
-            id_=json_dict["id"],
-            muted=json_dict["muted"],
-            name_=json_dict["name"],
-            type_=json_dict["type"],
-            video=json_dict["video"],
-            width=json_dict["width"],
-        )

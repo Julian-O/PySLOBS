@@ -1,56 +1,14 @@
 from __future__ import annotations
-from typing import Optional
+
+from .factories import (
+    scenenode_factory,
+    sceneitem_factory,
+    sceneitemfolder_factory,
+    scene_factory, register
+)
 from ..apibase import SlobsClass
 from .typedefs import ITransform, TSceneNodeType, ISceneNodeModel
 
-
-def create_scene_node_from_dict_INTERNAL(connection, json_dict):
-    if json_dict["sceneNodeType"] == "item":
-        return create_scene_item_from_dict_INTERNAL(connection, json_dict)
-    else:
-        assert json_dict["sceneNodeType"] == "folder"
-        return create_scene_item_folder_from_dict_INTERNAL(connection, json_dict)
-
-
-def create_scene_item_from_dict_INTERNAL(connection, json_dict):
-    return SceneItem(
-        connection=connection,
-        resource_id=json_dict["resourceId"],
-        source_id=json_dict["sourceId"],
-        id_=json_dict["id"],
-        # Spec says nodeId should be present, but found it wasn't.
-        node_id=json_dict.get("nodeId", None),
-        parent_id=json_dict["parentId"],
-        scene_id=json_dict["sceneId"],
-        scene_node_type=TSceneNodeType(json_dict["sceneNodeType"]),
-        name=json_dict["name"],
-        locked=json_dict["locked"],
-        recording_visible=json_dict["recordingVisible"],
-        scene_item_id=json_dict["sceneItemId"],
-        stream_visible=json_dict["streamVisible"],
-        transform="TBD",
-        # 'transform': {'position': {'x': 0, 'y': 0}, 'scale': {'x': 1, 'y': 1},
-        #               'crop': {'top': 0, 'bottom': 0, 'left': 0, 'right': 0},
-        #               'rotation': 0},
-        visible=json_dict["visible"],
-    )
-
-def create_scene_item_folder_from_dict_INTERNAL(connection, json_dict):
-    # Found children_ids as part of the dict, but not the spec.
-    # Might like to add in if useful to avoid a call.
-    return SceneItemFolder(
-        connection=connection,
-        # resourceId/sourceId oddly not part of the returned dict.
-        # fall back to id? Doesn't seem to work.
-        resource_id=json_dict.get("resourceId", json_dict["id"]),
-        source_id=json_dict.get("sourceId"),
-        id_=json_dict["id"],
-        name=json_dict["name"],
-        # Spec says nodeId should be present, but found it wasn't.
-        node_id=json_dict.get("nodeId", None),
-        parent_id=json_dict["parentId"],
-        scene_id=json_dict["sceneId"],
-        scene_node_type=TSceneNodeType(json_dict["sceneNodeType"]))
 
 class SceneNode(SlobsClass):
     def __init__(
@@ -119,19 +77,19 @@ class SceneNode(SlobsClass):
 
     async def get_model(self):  # -> ISceneNodeModel:
         response = await self._connection.command("getModel", self._prepared_params())
-        return create_scene_node_from_dict_INTERNAL(reponse)
+        return scenenode_factory(reponse)
 
     async def get_next_item(self):  # -> ISceneItem:
         response = await self._connection.command(
             "getNextItem", self._prepared_params()
         )
-        return create_scene_item_from_dict_INTERNAL(response)
+        return sceneitem_factory(response)
 
     async def get_next_node(self):  # -> ISceneNodeModel:
         response = await self._connection.command(
             "getNextNode", self._prepared_params()
         )
-        return create_scene_node_from_dict_INTERNAL(reponse)
+        return scenenode_factory(reponse)
 
     async def get_node_index(self) -> int:
         response = await self._connection.command(
@@ -141,7 +99,7 @@ class SceneNode(SlobsClass):
 
     async def get_parent(self) -> ISceneNodeModel:
         response = await self._connection.command("getParent", self._prepared_params())
-        return create_scene_item_folder_from_dict_INTERNAL(reponse)
+        return sceneitemfolder_factory(reponse)
 
     async def get_path(self) -> str:
         response = await self._connection.command("getPath", self._prepared_params())
@@ -151,17 +109,17 @@ class SceneNode(SlobsClass):
         response = await self._connection.command(
             "getPrevItem", self._prepared_params()
         )
-        return create_scene_item_from_dict_INTERNAL(response)
+        return sceneitem_factory(response)
 
     async def get_prev_node(self) -> ISceneNodeModel:
         response = await self._connection.command(
             "getPrevNode", self._prepared_params()
         )
-        return create_scene_node_from_dict_INTERNAL(reponse)
+        return scenenode_factory(reponse)
 
     async def get_scene(self):
         response = await self._connection.command("getScene", self._prepared_params())
-        return create_scene_from_dict(reponse)  # Implemented where?
+        return scene_factory(self._connection, response)
 
     async def has_parent(self) -> bool:
         response = await self._connection.command("hasParent", self._prepared_params())
@@ -243,27 +201,27 @@ class SceneItemFolder(SceneNode):
     # add
     async def get_folders(self) -> list[SceneItemFolder]:
         response = await self._connection.command("getFolders", self._prepared_params())
-        return [
-            create_scene_item_folder_from_dict_INTERNAL(json_dict)
-            for json_dict in response]
+        return [sceneitemfolder_factory(json_dict) for json_dict in response]
 
     async def get_items(self) -> list[SceneItem]:
         response = await self._connection.command("getItems", self._prepared_params())
         return [
-            create_scene_item_from_dict_INTERNAL(self._connection, json_dict)
-            for json_dict in response]
+            sceneitem_factory(self._connection, json_dict) for json_dict in response
+        ]
 
     async def get_nested_nodes(self) -> list[SceneItem]:
-        response = await self._connection.command("getNestedNodes", self._prepared_params())
+        response = await self._connection.command(
+            "getNestedNodes", self._prepared_params()
+        )
         return [
-            create_scene_node_from_dict_INTERNAL(self._connection, json_dict)
-            for json_dict in response]
+            scenenode_factory(self._connection, json_dict) for json_dict in response
+        ]
 
     async def get_nodes(self) -> list[SceneItem]:
         response = await self._connection.command("getNodes", self._prepared_params())
         return [
-            create_scene_node_from_dict_INTERNAL(self._connection, json_dict)
-            for json_dict in response]
+            scenenode_factory(self._connection, json_dict) for json_dict in response
+        ]
 
     # getSelection
     # setName
@@ -349,3 +307,7 @@ class SceneItem(SceneNode):
     # setTransform
     # setVisibility
     # stretchToScreen
+
+register(SceneNode)
+register(SceneItem)
+register(SceneItemFolder)

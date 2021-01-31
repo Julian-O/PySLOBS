@@ -3,6 +3,7 @@ from typing import Optional
 
 from .typedefs import IRectangle
 from .scenenode import SceneNode
+from .factories import selection_factory
 
 """ SelectionService and Selection share a lot in common.
     A mixin to support both. """
@@ -17,7 +18,7 @@ class SelectionBase:
         response = await self._connection.command(
             "sceneId", self._prepared_params([ids])
         )
-        return self._create_selection_from_dict(response)
+        return selection_factory(self._connection, response)
 
     async def center_on_screen(self) -> None:
         response = await self._connection.command(
@@ -27,7 +28,7 @@ class SelectionBase:
 
     async def clone(self):  # -> Selection:
         response = await self._connection.command("clone", self._prepared_params())
-        return self._create_selection_from_dict(response)
+        return selection_factory(self._connection, response)
 
     async def copy_to(
         self, scene_id: str, folder_id: Optional[str], duplicate_sources: Optional[bool]
@@ -40,7 +41,7 @@ class SelectionBase:
         response = await self._connection.command(
             "deselect", self._prepared_params([ids])
         )
-        return self._create_selection_from_dict(response)
+        return selection_factory(self._connection, response)
 
     async def fit_to_screen(self) -> None:
         response = await self._connection.command(

@@ -1,6 +1,6 @@
 from ..apibase import SlobsService, Event
 from .scene import Scene
-from .scenenode import create_scene_node_from_dict_INTERNAL
+from .factories import scenenode_factory, scene_factory
 from .typedefs import ISceneModel
 
 
@@ -17,25 +17,11 @@ class ScenesService(SlobsService):
             connection, "sceneSwitched", self.__class__.__name__
         )
 
-    def _create_scene_from_dict(self, json_dict):
-        return Scene(
-            self._connection,
-            # resource_ids are missing after a deletion.
-            resource_id=json_dict.get("resourceId", None),
-            source_id=json_dict["id"],
-            # Names are sometimes missing. Fill in an empty name.
-            name=json_dict.get("name", ""),
-            id=json_dict["id"],
-            nodes=[
-                create_scene_node_from_dict_INTERNAL(self._connection, node)
-                for node in json_dict["nodes"]],
-        )
-
     async def active_scene(self):
         response = await self._connection.command(
             "activeScene", self._prepared_params()
         )
-        return self._create_scene_from_dict(response)
+        return scene_factory(self._connection, response)
 
     async def active_scene_id(self):
         response = await self._connection.command(
@@ -47,17 +33,17 @@ class ScenesService(SlobsService):
         response = await self._connection.command(
             "createScene", self._prepared_params([scene_name])
         )
-        return self._create_scene_from_dict(response)
+        return scene_factory(self._connection, response)
 
     async def get_scene(self, scene_id: str) -> Scene:
         response = await self._connection.command(
             "activeScene", self._prepared_params([scene_id])
         )
-        return self._create_scene_from_dict(response)
+        return scene_factory(self._connection, response)
 
     async def get_scenes(self):
         response = await self._connection.command("getScenes", self._prepared_params())
-        return [self._create_scene_from_dict(subitem) for subitem in response]
+        return [scene_factory(self._connection, subitem) for subitem in response]
 
     # Warning: In Studio Mode, this won't take immediate effect.
     # See TransitionsService to detect Studio Mode and to execute the transition.
@@ -71,4 +57,4 @@ class ScenesService(SlobsService):
         response = await self._connection.command(
             "removeScene", self._prepared_params([id_])
         )
-        return self._create_scene_from_dict(response)
+        return scene_factory(self._connection, response)

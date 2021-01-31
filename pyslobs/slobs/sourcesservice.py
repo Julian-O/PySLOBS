@@ -2,6 +2,7 @@ from typing import Optional, Dict, List
 
 from ..apibase import SlobsService, Event
 from .source import Source, TSourceType, ISourceAddOptions
+from .factories import source_factory
 
 
 class SourcesService(SlobsService):
@@ -34,7 +35,7 @@ class SourcesService(SlobsService):
         response = await self._connection.command(
             "createSource", self._prepared_params([1 / 0])
         )
-        return Source._create_source_from_dict(self._connection, response)
+        return source_factory(self._connection, response)
 
     async def get_available_sources_types_list(self) -> list[any]:
         response = await self._connection.command(
@@ -46,14 +47,14 @@ class SourcesService(SlobsService):
         response = await self._connection.command(
             "getSource", self._prepared_params([source_id])
         )
-        return Source._create_source_from_dict(self._connection, response)
+        return source_factory(self._connection, response)
 
     async def get_sources(self) -> List[Source]:
         response = await self._connection.command(
             "getSources", self._prepared_params([])
         )
         return [
-            Source._create_source_from_dict(self._connection, subitem)
+            source_factory(self._connection, subitem)
             for subitem in response
         ]
 
@@ -62,7 +63,7 @@ class SourcesService(SlobsService):
             "getSourcesByName", self._prepared_params([name])
         )
         return [
-            Source._create_source_from_dict(self._connection, subitem)
+            source_factory(self._connection, subitem)
             for subitem in response
         ]
 

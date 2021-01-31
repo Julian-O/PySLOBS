@@ -1,11 +1,16 @@
 from typing import Optional, Any
 from ..apibase import SlobsClass
 from .scenenode import (
-    create_scene_node_from_dict_INTERNAL,
-    create_scene_item_from_dict_INTERNAL,
-    create_scene_item_folder_from_dict_INTERNAL,
     SceneNode,
 )
+from .factories import (
+    scenenode_factory,
+    sceneitem_factory,
+    sceneitemfolder_factory,
+    source_factory,
+    register,
+)
+from .typedefs import ISceneNodeAddOptions, ISourceAddOptions
 
 
 class Scene(SlobsClass):
@@ -51,12 +56,25 @@ class Scene(SlobsClass):
         raise NotImplementedError()
 
     async def add_source(
-        self, source_id: str, options: Optional[NotImplementedError]
+        self, source_id: str, options: Optional[ISceneNodeAddOptions]
     ) -> bool:
+        options_dict = {}
+        if options:
+            if options.id is not None:
+                option_dict["id"] = options.id
+            if options.source_add_options is not None:
+                source_add_options = {}
+                if options.source_add_options.channel is not None:
+                    source_add_options["channel"] = options.source_add_options.channel
+                if options.source_add_options.is_temporary is not None:
+                    source_add_options[
+                        "isTemporary"
+                    ] = options.source_add_options.is_temporary
+                options_dict["sourceAddOptions"] = source_add_options
         response = await self._connection.command(
-            "addSource", self._prepared_params([source_id, options])
+            "addSource", self._prepared_params([source_id, options_dict])
         )
-        raise NotImplementedError()
+        return response
 
     async def can_add_source(self, source_id: str) -> bool:
         response = await self._connection.command(
@@ -74,10 +92,21 @@ class Scene(SlobsClass):
     # async def getFolders
     # async def getItem
     # async def getItems
-    # async def getModel
+
+    async def get_model(self):
+        response = await self._connection.command("getModel", self._prepared_params())
+        return scene_factory(self._connection, response)
+
     # async def getNestedItems
     # async def getNestedScenes
+
     # async def getNestedSources
+    async def get_nested_sources(self):  # -> Source
+        response = await self._connection.command(
+            "getNestedSources", self._prepared_params()
+        )
+        return [source_factory(self._connection, source) for source in response]
+
     # async def getNode
     # async def getNodeByName
     # async def getNodes(refresh=True)
@@ -85,11 +114,7 @@ class Scene(SlobsClass):
         response = await self._connection.command(
             "getRootNodes", self._prepared_params()
         )
-        print("Root nodes", response)
-        return [
-            create_scene_node_from_dict_INTERNAL(self._connection, node)
-            for node in response
-        ]
+        return [scenenode_factory(self._connection, node) for node in response]
 
     # async def getSelection
     # async def getSource
@@ -110,3 +135,6 @@ class Scene(SlobsClass):
 
         # Update local cache.
         self._name = new_name
+
+
+register(Scene)

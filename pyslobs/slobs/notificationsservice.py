@@ -16,7 +16,7 @@ from .typedefs import (
 
 class NotificationsService(SlobsService):
     @staticmethod
-    def _create_inotification_model_from_dict(json_dict):
+    def _inotification_model_factory(json_dict):
         return INotificationModel(
             action=json_dict.get("action", None),
             code=json_dict.get("code", None),
@@ -43,21 +43,21 @@ class NotificationsService(SlobsService):
             "getAll", self._prepared_params([type_.value])
         )
         return [
-            self._create_inotification_model_from_dict(subitem) for subitem in response
+            self._inotification_model_factory(subitem) for subitem in response
         ]
 
     async def get_notification(self, id_):
         response = await self._connection.command(
             "getNotification", self._prepared_params([id_])
         )
-        return self._create_inotification_model_from_dict(response)
+        return self._inotification_model_factory(response)
 
     async def get_read(self, type_: NotificationType):
         response = await self._connection.command(
             "getRead", self._prepared_params([type_.value])
         )
         return [
-            self._create_inotification_model_from_dict(subitem) for subitem in response
+            self._inotification_model_factory(subitem) for subitem in response
         ]
 
     async def get_settings(self) -> INotificationSettings:
@@ -73,7 +73,7 @@ class NotificationsService(SlobsService):
             "getUnread", self._prepared_params([type_.value])
         )
         return [
-            self._create_inotification_model_from_dict(subitem) for subitem in response
+            self._inotification_model_factory(subitem) for subitem in response
         ]
 
     async def mark_all_as_read(self):
@@ -100,7 +100,7 @@ class NotificationsService(SlobsService):
         response = await self._connection.command(
             "push", self._prepared_params([translated_dict])
         )
-        return self._create_inotification_model_from_dict(response)
+        return self._inotification_model_factory(response)
 
     async def restore_default_settings(self):
         response = await self._connection.command(

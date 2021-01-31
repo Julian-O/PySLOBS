@@ -1,5 +1,6 @@
 from ..apibase import SlobsClass
 from .typedefs import IFader, IAudioSourceModel, MonitoringType
+from .factories import register
 
 
 class AudioSource(SlobsClass):
@@ -34,3 +35,6 @@ class AudioSource(SlobsClass):
             "setMuted", self._prepared_params([muted])
         )
         self._check_empty(response)
+
+# Dependency Injection
+register(AudioSource)

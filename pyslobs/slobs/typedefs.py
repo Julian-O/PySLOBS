@@ -96,5 +96,8 @@ ISceneNodeModel = namedtuple(
     "ISceneNodeModel", "children_ids id parent_id scene_id scene_node_type"
 )
 
+ISceneNodeAddOptions = namedtuple("ISceneNodeAddOptions", "id source_add_options")
+
+ISourceAddOptions = namedtuple("ISourceAddOptions", "channel is_temporary")
 
 ITransform = namedtuple("ITransform", "crop position rotation scale")
