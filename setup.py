@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="PySLOBS",
-    version="0.1.3",
+    version="0.1.4",
     author="Julian-O",
     # author_email="",
     description="Python wrapper to StreamLabs OBS API",
