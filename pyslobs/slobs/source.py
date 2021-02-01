@@ -1,36 +1,9 @@
 from __future__ import annotations  # Postponed eval of annotations. Fixed in 3.10
-from collections import namedtuple
 from typing import Optional, Any, Dict
 
+from .typedefs import TObsFormData, TSourceType, ISourceModel
 from ..apibase import SlobsClass
-from .factories import source_factory
-
-# These is unclearly defined.
-TObsFormData = str
-# This is one of the source types, like browser_source. Don't have a master list.
-TSourceType = str
-
-ISourceAddOptions = namedtuple("ISourceAddOptions", "channel is_temporary")
-
-
-ISourceModel = namedtuple(
-    "ISourceModel",
-    [
-        "async_",
-        "audio",
-        "channel",
-        "do_not_duplicate",
-        "height",
-        "id",
-        "muted",
-        "name",
-        "source_id",
-        "type_",
-        "video",
-        "width",
-    ],
-)
-
+from .factories import source_factory, register
 
 class Source(SlobsClass):
     # There is an undocumented Configurable field. Sharing here without knowing what
@@ -179,3 +152,5 @@ class Source(SlobsClass):
             "updateSettings", self._prepared_params([settings])
         )
         self._check_empty(response)
+
+register(Source)

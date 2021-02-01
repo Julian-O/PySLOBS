@@ -14,6 +14,7 @@ from .slobs.typedefs import (
     NotificationType,
     MonitoringType,
     TSceneNodeType,
+    ISourceAddOptions,
 )
 
 __all__ = [
@@ -31,4 +32,6 @@ __all__ = [
     "TransitionsService",
     "NotificationSubType",
     "NotificationType",
+    "TSceneNodeType",
+    "ISourceAddOptions",
 ]

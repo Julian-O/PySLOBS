@@ -70,7 +70,9 @@ class _SlobsWebSocket:
             except WebSocketTimeoutException:
                 LOGGER.debug("Retrying after timeout.")
             except OSError as e:
-                LOGGER.warning("OSError received. Probably socket was closed. Retrying: %s", e)
+                LOGGER.warning(
+                    "OSError received. Probably socket was closed. Retrying: %s", e
+                )
                 time.sleep(1)  # To prevent busy-loop
         self.close()
         return None
@@ -165,19 +167,26 @@ class SlobsConnection:
         """
         try:
             while self.websocket and self.websocket.is_alive():
-                message = await self._receive_message()
-                LOGGER.debug("Received message to dispatch: %s", message)
+                try:
+                    message = await self._receive_message()
+                    LOGGER.debug("Received message to dispatch: %s", message)
 
-                if message:
-                    if "id" in message and message["id"] is not None:
-                        # This is a response to an explicit request.
-                        key = message["id"]
-                        await self.hub.publish(key=key, message=message)
-                    else:
-                        # This is a response to an subscription.
-                        key = message["result"]["resourceId"]
-                        data = message["result"].get("data", None)
-                        await self.hub.publish(key=key, message=data)
+                    if message:
+                        if "id" in message and message["id"] is not None:
+                            # This is a response to an explicit request.
+                            key = message["id"]
+                            await self.hub.publish(key=key, message=message)
+                        else:
+                            # This is a response to an subscription.
+                            key = message["result"]["resourceId"]
+                            data = message["result"].get("data", None)
+
+                            await self.hub.publish(key=key, message=data)
+                except AttributeError:
+                    if not self.hub:
+                        # Connection was closed mid-receive.
+                        break
+                    raise
         except Exception:
             LOGGER.exception("_receive_and_dispatch failing.")
 
@@ -306,6 +315,7 @@ class SlobsConnection:
                 raise ProtocolError("Unsubscribe failed.")
 
     async def close(self):
+        LOGGER.debug("Request to close connection.")
         if self.websocket:
             socket_to_close = self.websocket
             self.websocket = None  # So we don't recurse.

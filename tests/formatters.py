@@ -1,5 +1,6 @@
 from pyslobs import MonitoringType, TSceneNodeType
 
+
 def str_emonitoringtype(emt):
     return "No Monitoring" if emt == MonitoringType.NONE else (emt.name)
 
@@ -105,19 +106,16 @@ async def str_scene_multiline(scene, indent, show_nodes=True, as_tree=False):
     if not show_nodes:
         nodes = ""
     elif not as_tree:
-            nodes = (
-                "\n|     +- "
-                + ("\n" + indent + "|     +- ").join(str_node(node) for node in scene.nodes)
-            )
+        nodes = "\n|     +- " + ("\n" + indent + "|     +- ").join(
+            str_node(node) for node in scene.nodes
+        )
     else:
         root_nodes = await scene.get_root_nodes()
         sub_item_strs = [
             str(await str_node_tree_multiline(node, indent + "|"))
             for node in root_nodes
-            ]
-        nodes = ("\n" +
-            "".join(sub_item_strs)
-        )
+        ]
+        nodes = "\n" + "".join(sub_item_strs)
 
     return (
         indent
@@ -150,10 +148,30 @@ async def str_node_tree_multiline(node, indent):
         return first_line
 
     sub_nodes = await node.get_nodes()
-    trailing_lines = (
-
-         "".join(
-            [(await str_node_tree_multiline(sub_node, indent + "    |")) for sub_node in sub_nodes]
-        )
+    trailing_lines = "".join(
+        [
+            (await str_node_tree_multiline(sub_node, indent + "    |"))
+            for sub_node in sub_nodes
+        ]
     )
     return first_line + trailing_lines
+
+
+async def str_source_multiline(source, indent):
+    return (
+        indent
+        + "+- Source:"
+        + (" " + repr(source.name))
+        + (" " + repr(source.resource_id))
+        + (" " + repr(source.source_id))
+        + ("\n" + indent + "|    ")
+        + source.type_
+        + f" {'A' if source.audio else ''}{'(muted)' if source.muted else''}"
+        + f"{'V' if source.video else ''}({source.width}x{source.height})"
+        + f" ch:{source.channel}"
+        + f"{' do-not-duplicate' if source.do_not_duplicate else''}"
+        + ("\n" + indent + "|      ")
+        + ("+- Model: " + str(await source.get_model()))
+        + ("\n" + indent + "|      ")
+        + ("+- Settings: " + str(await source.get_settings()))
+    )

@@ -1,7 +1,8 @@
 from typing import Optional, Dict, List
 
 from ..apibase import SlobsService, Event
-from .source import Source, TSourceType, ISourceAddOptions
+from .source import Source
+from .typedefs import TSourceType, IObsListOption, ISourceAddOptions
 from .factories import source_factory
 
 
@@ -16,7 +17,7 @@ class SourcesService(SlobsService):
         )
 
         self.source_updated = Event(
-            connection, "sourceRemoved", self.__class__.__name__
+            connection, "sourceUpdated", self.__class__.__name__
         )
 
     async def add_file(self, path: str) -> Source:
@@ -32,8 +33,14 @@ class SourcesService(SlobsService):
         settings: Optional[Dict],
         options: Optional[ISourceAddOptions],
     ) -> Source:
+        options_dict = (
+            {}
+            if not options
+            else {"channel": options.channel, "isTemporary": options.is_temporary}
+        )
         response = await self._connection.command(
-            "createSource", self._prepared_params([1 / 0])
+            "createSource",
+            self._prepared_params([name, type_, settings, options_dict]),
         )
         return source_factory(self._connection, response)
 
@@ -41,7 +48,10 @@ class SourcesService(SlobsService):
         response = await self._connection.command(
             "getAvailableSourcesTypesList", self._prepared_params([])
         )
-        return [NotImplementedError() for subitem in response]
+        return [
+            IObsListOption(value=subitem["value"], description=subitem["description"])
+            for subitem in response
+        ]
 
     async def get_source(self, source_id: str) -> Source:
         response = await self._connection.command(
@@ -53,19 +63,13 @@ class SourcesService(SlobsService):
         response = await self._connection.command(
             "getSources", self._prepared_params([])
         )
-        return [
-            source_factory(self._connection, subitem)
-            for subitem in response
-        ]
+        return [source_factory(self._connection, subitem) for subitem in response]
 
     async def get_sources_by_name(self, name: str) -> List[Source]:
         response = await self._connection.command(
             "getSourcesByName", self._prepared_params([name])
         )
-        return [
-            source_factory(self._connection, subitem)
-            for subitem in response
-        ]
+        return [source_factory(self._connection, subitem) for subitem in response]
 
     async def remove_source(self, id_: str) -> None:
         response = await self._connection.command(

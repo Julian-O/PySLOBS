@@ -8,28 +8,28 @@ import asyncio
 from pyslobs import NotificationsService, SourcesService
 
 
-async def show_notification_dialog(conn):
+async def show_notification_dialog(conn, delay):
     ns = NotificationsService(conn)
     print("Please note the 'Notifications' dialogue.")
     await ns.show_notifications()
-    await asyncio.sleep(5)
+    await asyncio.sleep(delay)
 
 
-async def show_add_source_dialog(conn):
+async def show_add_source_dialog(conn, delay):
     ss = SourcesService(conn)
     print("Please note the 'Name source' dialogue.")
     await ss.show_add_source("This doesn't matter?")
-    await asyncio.sleep(5)
+    await asyncio.sleep(delay)
 
 
-async def show_add_showcase_dialog(conn):
+async def show_add_showcase_dialog(conn, delay):
     ss = SourcesService(conn)
     print("Please note the 'Select source type' dialogue.")
     await ss.show_showcase()
-    await asyncio.sleep(5)
+    await asyncio.sleep(delay)
 
 
-async def show_source_properties_dialog(conn):
+async def show_source_properties_dialog(conn, delay):
     ss = SourcesService(conn)
     sources = await ss.get_sources()
     first_source = sources[0]
@@ -39,14 +39,14 @@ async def show_source_properties_dialog(conn):
     await ss.show_source_properties(first_source_id)
 
 
-async def show_all_dialogs(conn):
-    await show_notification_dialog(conn)
-    await show_add_source_dialog(conn)
-    await show_add_showcase_dialog(conn)
-    await show_source_properties_dialog(conn)
+async def exercise_all_ui(conn, delay=0):
+    await show_notification_dialog(conn, delay)
+    await show_add_source_dialog(conn, delay)
+    await show_add_showcase_dialog(conn, delay)
+    await show_source_properties_dialog(conn, delay=0)
 
 
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
 
-    run_exercise(show_all_dialogs)
+    run_exercise(exercise_all_ui, delay=5)

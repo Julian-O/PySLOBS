@@ -101,3 +101,30 @@ ISceneNodeAddOptions = namedtuple("ISceneNodeAddOptions", "id source_add_options
 ISourceAddOptions = namedtuple("ISourceAddOptions", "channel is_temporary")
 
 ITransform = namedtuple("ITransform", "crop position rotation scale")
+
+IObsListOption = namedtuple("IObsListOptions", "value description")
+
+# These is unclearly defined.
+TObsFormData = str
+
+# This is one of the source types, like browser_source.
+# The master list is returned by SourcesServices.getAvailableSourcesTypesList()
+TSourceType = str
+
+ISourceModel = namedtuple(
+    "ISourceModel",
+    [
+        "async_",
+        "audio",
+        "channel",
+        "do_not_duplicate",
+        "height",
+        "id",
+        "muted",
+        "name",
+        "source_id",
+        "type_",
+        "video",
+        "width",
+    ],
+)

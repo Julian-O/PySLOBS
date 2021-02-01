@@ -3,7 +3,7 @@ import logging
 
 from pyslobs import SlobsConnection
 
-from .config import token
+from config import token
 
 
 async def closing_exercise(conn, exercise):
