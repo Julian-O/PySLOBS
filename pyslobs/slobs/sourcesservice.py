@@ -22,9 +22,9 @@ class SourcesService(SlobsService):
 
     async def add_file(self, path: str) -> Source:
         response = await self._connection.command(
-            "addFile", self._prepared_params([path])
+            "addFile", self._prepared_params([str(path)])
         )
-        raise NotImplementedError()
+        return source_factory(self._connection, response)
 
     async def create_source(
         self,

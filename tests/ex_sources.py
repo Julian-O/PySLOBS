@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 
 from pyslobs import SourcesService, ISourceAddOptions
 import formatters as pp
@@ -39,7 +40,7 @@ async def add_source(conn):
         options=ISourceAddOptions(channel=None, is_temporary=False),
     )
 
-    print("Created source:")
+    print("Created browser source:")
     print(await pp.str_source_multiline(source, ""))
 
     await asyncio.sleep(0.1)
@@ -72,6 +73,19 @@ async def add_source(conn):
         "SourcesService.sourceRemoved": 1,
     }
 
+    file_source = await ss.add_file(
+            Path(__file__).parent / "testpattern.jpg")
+
+    print("Created source from file:")
+    print(await pp.str_source_multiline(file_source, ""))
+
+    await ss.remove_source(file_source.source_id)
+    assert events == {
+        "SourcesService.sourceAdded": 2,
+        "SourcesService.sourceUpdated": 1,
+        "SourcesService.sourceRemoved": 2,
+    }
+
 
 async def exercise_sourcesservice_ro(conn):
     await show_all_sources(conn)
@@ -85,4 +99,4 @@ async def exercise_sourcesservice_rw(conn):
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
 
-    run_exercise(exercise_sourcesservice_ro)
+    run_exercise(exercise_sourcesservice_rw)
