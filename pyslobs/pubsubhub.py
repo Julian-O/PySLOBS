@@ -55,7 +55,7 @@ class PubSubHub:
         callback_coroutine: PubSubHub.Callback,
         subscription_preferences: SubscriptionPreferences = SubscriptionPreferences(),
     ):
-        assert asyncio.iscoroutinefunction(callback_coroutine)
+        assert asyncio.iscoroutinefunction(callback_coroutine), "Callback must be async"
         if key not in self._subscribers_by_key:
             self._subscribers_by_key[key] = {
                 callback_coroutine: subscription_preferences
