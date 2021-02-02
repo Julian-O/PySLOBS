@@ -11,7 +11,7 @@ from .factories import (
     source_factory,
     register,
 )
-from .typedefs import ISceneNodeAddOptions, ISourceAddOptions
+from .typedefs import ISceneNodeAddOptions, ISourceAddOptions, TSourceType
 
 
 class Scene(SlobsClass):
@@ -86,16 +86,16 @@ class Scene(SlobsClass):
         self._check_empty(response)
 
     async def create_and_add_source(
-        self, name: string, type_: TSourceType, settings: Optional[dict[Any]]
-    ) -> SceneItem:
+        self, name: str, type_: TSourceType, settings: Optional[dict[Any]]
+    ): # -> SceneItem:
         response = await self._connection.command(
             "createAndAddSource", self._prepared_params([name, type_, settings])
         )
         return sceneitem_factory(self._connection, response)
 
     async def create_folder(
-        self, name: string, type_: TSourceType, settings: Optional[dict[Any]]
-    ) -> SceneItem:
+        self, name: str, type_: TSourceType, settings: Optional[dict[Any]]
+    ): # -> SceneItem:
         response = await self._connection.command(
             "createFolder", self._prepared_params([name, type_, settings])
         )

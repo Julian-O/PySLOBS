@@ -4,7 +4,7 @@ from .factories import (
     scenenode_factory,
     sceneitem_factory,
     sceneitemfolder_factory,
-    scene_factory, register
+    scene_factory, source_factory, register
 )
 from ..apibase import SlobsClass
 from .typedefs import ITransform, TSceneNodeType, ISceneNodeModel
@@ -294,19 +294,74 @@ class SceneItem(SceneNode):
     def visible(self):
         return self._visible
 
-    # centerOnScreen
-    # fitToScreen
-    # flipX
-    # flipY
-    # getSource
-    # resetTransform
-    # rotate
-    # setContentCrop
+    async def center_on_screen(self):
+        response = await self._connection.command(
+            "centerOnScreen", self._prepared_params()
+        )
+        self._check_empty(response)
+
+    async def fit_to_screen(self):
+        response = await self._connection.command(
+            "fitToScreen", self._prepared_params()
+        )
+        self._check_empty(response)
+
+    async def flip_x(self):
+        response = await self._connection.command(
+            "flipX", self._prepared_params()
+        )
+        self._check_empty(response)
+    async def flip_y(self):
+        response = await self._connection.command(
+            "flipY", self._prepared_params()
+        )
+        self._check_empty(response)
+
+
+
+    async def get_source(self):
+        response = await self._connection.command(
+            "getSource", self._prepared_params()
+        )
+        return source_factory(self._connection, response)
+
+
+    async def reset_transform(self, deg):
+        response = await self._connection.command(
+            "resetTransform", self._prepared_params([deg])
+        )
+        self._check_empty(response)
+
+    async def rotate(self, deg):
+        response = await self._connection.command(
+            "rotate", self._prepared_params([deg])
+        )
+        self._check_empty(response)
+
+    async def set_content_crop(self):
+        response = await self._connection.command(
+            "setContentCrop", self._prepared_params()
+        )
+        self._check_empty(response)
+
+
     # setScale
     # setSettings
     # setTransform
-    # setVisibility
-    # stretchToScreen
+
+    async def set_visibility(self, visible):
+        response = await self._connection.command(
+            "setVisibility", self._prepared_params([visible])
+        )
+        self._check_empty(response)
+
+
+    async def stretch_to_screen(self):
+        response = await self._connection.command(
+            "stretchToScreen", self._prepared_params()
+        )
+        self._check_empty(response)
+
 
 register(SceneNode)
 register(SceneItem)
