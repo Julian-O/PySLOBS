@@ -15,6 +15,7 @@ from .slobs.typedefs import (
     MonitoringType,
     TSceneNodeType,
     ISourceAddOptions,
+    ISceneCollectionCreateOptions,
 )
 
 __all__ = [
@@ -34,4 +35,5 @@ __all__ = [
     "NotificationType",
     "TSceneNodeType",
     "ISourceAddOptions",
+    "ISceneCollectionCreateOptions",
 ]
