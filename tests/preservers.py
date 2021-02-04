@@ -25,13 +25,26 @@ class StudioModeDisabled:
     async def __aenter__(self):
         self._initial_studio_mode = (await self._ts.get_model()).studio_mode
         if self._initial_studio_mode:
-            await self._ts.disable_studio_mode()
+            print("Initial disable.")
+            while True:
+                try:
+                    await self._ts.disable_studio_mode()
+                    break
+                except ProtocolError:
+                    print("Failed. Will retry")
+                    await asyncio.sleep(3)
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         if self._initial_studio_mode:
             # Leave how we found it.
-            await self._ts.enable_studio_mode()
+            while True:
+                try:
+                    await self._ts.enable_studio_mode()
+                    break
+                except ProtocolError:
+                    print("Failed. Will retry")
+                    await asyncio.sleep(3)
 
 
 class TestScene:
