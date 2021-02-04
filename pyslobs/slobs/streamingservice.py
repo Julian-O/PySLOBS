@@ -51,8 +51,7 @@ class StreamingService(SlobsService):
         self._check_empty(response)
 
     # Warning: According to the API, this may never return?!
-    # Warning: During tests this sometimes failed to stop streaming; not sure
-    # of the criteria.
+    # Warning: If called too quickly, may fail without notice.
     async def toggle_streaming(self):
         response = await self._connection.command(
             "toggleStreaming", self._prepared_params()
