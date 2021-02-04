@@ -253,8 +253,7 @@ class SlobsConnection:
                 await self.hub.subscribe(key, callback)
                 response = await response_as_event_queue.get()
                 await self.hub.unsubscribe(key, callback)
-
-                await queue.put(response["event"])
+                await queue.put(response)
             else:
                 await queue.put(result)
         except Exception:
