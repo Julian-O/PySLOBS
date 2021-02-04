@@ -68,6 +68,8 @@ class SceneCollectionsService(SlobsService):
         self._check_empty(response)
 
     async def fetch_scene_collections_schema(self):
+        # Note: Intermittently raises ProtocolError (code=-32600 INVALID_REQUEST)
+        # possibly if called too quickly after other operations?
         response = await self._connection.command(
             "fetchSceneCollectionsSchema", self._prepared_params([])
         )
