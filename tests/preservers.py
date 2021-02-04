@@ -54,7 +54,7 @@ class TestScene:
             "Safe Test Scene " + datetime.now().isoformat()
         )
         self._safe_test_scene_id = safe_test_scene.source_id
-        return self
+        return safe_test_scene
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         await self._ss.make_scene_active(self._initial_scene_id)
