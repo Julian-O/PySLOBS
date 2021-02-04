@@ -128,3 +128,14 @@ ISourceModel = namedtuple(
         "width",
     ],
 )
+
+ISceneCollectionsManifestEntry = namedtuple(
+    "ISceneCollectionsManifestEntry", "id name"
+)
+
+ISceneCollectionSchema = namedtuple(
+        "ISceneCollectionSchema", "id name scenes sources")
+
+ISceneCollectionCreateOptions = namedtuple(
+        "ISceneCollectionCreateOptions", "name")
+

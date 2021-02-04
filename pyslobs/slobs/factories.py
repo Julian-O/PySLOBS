@@ -119,3 +119,4 @@ def selection_factory(connection, json_dict):
         source_id=json_dict["id"],
         scene_id=json_dict["sceneId"],
     )
+
