@@ -11,12 +11,14 @@ class TransitionsService(SlobsService):
         )
 
     async def disable_studio_mode(self):
+        # Warning: Intermittently fails with ProtocolError
         response = await self._connection.command(
             "disableStudioMode", self._prepared_params()
         )
         self._check_empty(response)
 
     async def enable_studio_mode(self):
+        # Warning: Intermittently fails with ProtocolError
         response = await self._connection.command(
             "enableStudioMode", self._prepared_params()
         )
