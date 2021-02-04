@@ -129,13 +129,8 @@ ISourceModel = namedtuple(
     ],
 )
 
-ISceneCollectionsManifestEntry = namedtuple(
-    "ISceneCollectionsManifestEntry", "id name"
-)
+ISceneCollectionsManifestEntry = namedtuple("ISceneCollectionsManifestEntry", "id name")
 
-ISceneCollectionSchema = namedtuple(
-        "ISceneCollectionSchema", "id name scenes sources")
+ISceneCollectionSchema = namedtuple("ISceneCollectionSchema", "id name scenes sources")
 
-ISceneCollectionCreateOptions = namedtuple(
-        "ISceneCollectionCreateOptions", "name")
-
+ISceneCollectionCreateOptions = namedtuple("ISceneCollectionCreateOptions", "name")
