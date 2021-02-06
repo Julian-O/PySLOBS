@@ -1,22 +1,19 @@
 ## Progress
 
-This project is still in Alpha. This document explains what is ready to use
-and what is not.
+This project has now been released. However, the API is very large, and some
+parts remain untested.
 
 ### Core Infrastructure
 
 The ability to connect to the server, send commands, receive replies and 
 subscribe to notifications is all in place.
 
-All of the SlobsServices have been defined, and almost all of the Slobs
-classes.
+All of the SlobsServices and Slobs classes have been defined.
 
-All of the Events and almost all of the Properties have been defined.
+All of the Events and Properties have been defined.
 
-There are 170 commands that can be called on Classes and Services. At last 
-count, only 70 had been implemented. (Note: Each method is relatively
-short to implement; if there are particular commands you need implemented
-faster, please raise an Issue.)
+All 268 commands that can be called on Classes and Services have been implemented.
+However, they have not all been tested.
 
 ### Testing
 
@@ -59,7 +56,7 @@ The exercises are divided into four categories:
  ### Progress Chart
  
  This unwieldy chart is colour-coded to show progress towards getting every
- Service, Class, Property, Event and Method available on the API both
- implemented and part of exercise code so they can be repeatable checked.
+ Service, Class, Property, Event and Method available on the API covered 
+ by the exercise code.
  
  ![Progress Chart](progress_chart.png)
