@@ -27,9 +27,6 @@ the following details:
     * IP addresses: If your application is on a different host to StreamLabs OBS, your
     Python application will need to know one of the IP addresses offered.
 
-**Note:** For simplicity, the examples and exercises assume that the default port is
-being used and it is running on the same machine.
-
 ----
 
 When running the examples or exercises, you will be prompted to type in the API token
@@ -38,6 +35,9 @@ each time.
 Alternatively, you can paste it into a file called `token.txt` in the current directory
 or the directory this file is in.
 (Contributors: Do not commit this file!)
+
+**Note:** For simplicity, the examples and exercises assume that the default port is
+being used and it is running on the same machine.
 
 """
 
