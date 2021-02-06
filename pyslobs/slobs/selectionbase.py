@@ -1,9 +1,14 @@
 from __future__ import annotations  # Postponed eval of annotations. Fixed in 3.10
 from typing import Optional
 
-from .typedefs import IRectangle
+from .typedefs import IRectangle, ISelectionModel
 from .scenenode import SceneNode
-from .factories import selection_factory
+from .factories import (
+    selection_factory,
+    sceneitemfolder_factory,
+    sceneitem_factory,
+    scenenode_factory,
+)
 
 """ SelectionService and Selection share a lot in common.
     A mixin to support both. """
@@ -36,6 +41,7 @@ class SelectionBase:
         response = await self._connection.command(
             "copyTo", self._prepared_params([scene_id, folder_id, duplicate_sources])
         )
+        self._check_empty(response)
 
     async def deselect(self, ids: list[str]):  # -> Selection:
         response = await self._connection.command(
@@ -71,6 +77,14 @@ class SelectionBase:
         else:
             return None
 
+    async def get_folders(self) -> list[str]:
+        response = await self._connection.command(
+            "getFolders", self._prepared_params([])
+        )
+        return [
+            sceneitemfolder_factory(self._connection, subitem) for subitem in response
+        ]
+
     async def get_ids(self) -> list[str]:
         response = await self._connection.command("getIds", self._prepared_params([]))
         return response
@@ -79,8 +93,7 @@ class SelectionBase:
         response = await self._connection.command(
             "getInverted", self._prepared_params([])
         )
-        raise NotImplementedError()
-        return []
+        return scenenode_factory(self._connection, response)
 
     async def get_inverted_ids(self) -> list[str]:
         response = await self._connection.command(
@@ -88,36 +101,188 @@ class SelectionBase:
         )
         return response
 
+    async def get_items(self) -> list[SceneItem]:
+        response = await self._connection.command("getItems", self._prepared_params([]))
+        return sceneitem_factory(self._connection, response)
 
-#    async def getItems(self) -> list[SceneItem]:
-#    async def getLastSelected(self) -> SceneNode:
-#    async def getLastSelectedId(self) -> str:
-#    async def getModel(self) -> ISelectionModel:
-#    async def getRootNodes(self) -> list[SceneNode]:
-#    async def getScene(self) -> Scene:
-#    async def getSize(self) -> int:
-#    async def getSources(self) -> [Sources]
-#    async def getVisualItems(self) -> list[SceneItems]:
-#    async def invert(self) -> Selection:
-#    async def isSceneFolder(self) -> bool:
-#    async def isSceneItem(self) -> bool:
-#    async def isSelected(self, node_id : str) -> bool:
-#    async def moveTo(self, scene_id: str, folder_id: Optional[str]) -> None:
-#    async def placeAfter(self, scene_node_id : str) -> None:
-#    async def placeBefore(self, scene_node_id : str) -> None:
-#    async def remove(self) -> None:
-#    async def reset(self) -> Selection:
-#    async def resetTransform(self) -> None:
-#    async def rotate(self, deg: int) -> None:
-#    async def scale(self, scale : IVec2, origin: Optional[IVec2]) -> None:
-#    async def scaleWithOffset(self, scale : IVec2, offset: IVec2) -> None:
-#    async def select(self, ids : list[ids]) -> Selection:
-#    async def selectAll(self) -> Selection:
-#    async def setContentCrop(self) -> None:
-#    async def setParent(self, folder_id: str) -> None:
-#    async def setRecordingVisible(self, recording_visible : bool) -> None:
-#    async def setSettings(self, settings: dict) -> None:
-#    async def setStreamVisible(self, stream_visible : bool) -> None:
-#    async def setTransform(self, transform: IPartialTransform) -> None
-#    async def setVisibility(self, visible: boolean) -> None:
-#    async def stretchToScreen(self) -> None:
+    async def getLastSelected(self) -> SceneNode:
+        response = await self._connection.command(
+            "getLastSelectedId", self._prtepared_params()
+        )
+        return scenenode_factory(self._connection, response)
+
+    async def get_last_selected_id(self) -> bool:
+        response = await self._connection.command(
+            "getLastSelectedId", self._prepared_params()
+        )
+        return response
+
+    async def get_model(self) -> ISelectionModel:
+        response = await self._connection.command("getModel", self._prepared_params())
+        return ISelectionModel(
+            last_selected_id=response.get("lastSelectedId", []),
+            selected_ids=response["selectedIds"],
+        )
+
+    async def get_root_nodes(self) -> list[SceneNode]:
+        response = await self._connection.command(
+            "getRootNodes", self._prepared_params()
+        )
+        return [scenenode_factory(self._connection, subitem) for subitem in response]
+
+    async def get_scene(self) -> list[SceneNode]:
+        response = await self._connection.command("getScene", self._prepared_params())
+        return scenenode_factory(self._connection, response)
+
+    async def get_size(self) -> bool:
+        response = await self._connection.command("getSize", self._prepared_params())
+        return response
+
+    async def get_sources(self) -> list[Sources]:
+        response = await self._connection.command("getSources", self._prepared_params())
+        return [source_factory(self._connection, subitem) for subitem in response]
+
+    async def get_visual_items(self) -> list[SceneItems]:
+        response = await self._connection.command(
+            "getVisualItems", self._prepared_params()
+        )
+        return [sceneitem_factory(self._connection, subitem) for subitem in response]
+
+    async def invert(self) -> Selection:
+        response = await self._connection.command("invert", self._prepared_params())
+        return [scenenode_factory(self._connection, subitem) for subitem in response]
+
+    async def is_scene_folder(self) -> bool:
+        response = await self._connection.command(
+            "isSceneFolder", self._prepared_params()
+        )
+        return response
+
+    async def is_scene_item(self) -> bool:
+        response = await self._connection.command(
+            "isSceneItem", self._prepared_params()
+        )
+        return response
+
+    async def is_selected(self, node_id: str) -> bool:
+        response = await self._connection.command(
+            "isSelected", self._prepared_params([node_id])
+        )
+        return response
+
+    async def move_to(self, scene_id: str, folder_id: Optional[str]) -> None:
+        response = await self._connection.command(
+            "moveTo", self._prepared_params([scene_id, folder_id])
+        )
+        self._check_empty(response)
+
+    async def place_after(self, scene_node_id: str) -> None:
+        response = await self._connection.command(
+            "placeBefore", self._prepared_params([scene_node_id])
+        )
+        self._check_empty(response)
+
+    async def place_before(self, scene_node_id: str) -> None:
+        response = await self._connection.command(
+            "placeBefore", self._prepared_params([scene_node_id])
+        )
+        self._check_empty(response)
+
+    async def remove(self) -> None:
+        response = await self._connection.command("remove", self._prepared_params([]))
+        self._check_empty(response)
+
+    async def reset(self) -> Selection:
+        response = await self._connection.command("reset", self._prepared_params([]))
+        return selection_factory(self._connection(), response)
+
+    async def reset_transform(self) -> None:
+        response = await self._connection.command(
+            "resetTransform", self._prepared_params([])
+        )
+        self._check_empty(response)
+
+    async def rotate(self, deg: int) -> None:
+        response = await self._connection.command(
+            "resetTransform", self._prepared_params([deg])
+        )
+        self._check_empty(response)
+
+    async def scale(self, scale: IVec2, origin: Optional[IVec2]) -> None:
+        response = await self._connection.command(
+            "resetTransform", self._prepared_params([scale, origin])
+        )
+        self._check_empty(response)
+
+    async def scale_with_offset(self, scale : IVec2, offset: IVec2) -> None:
+        response = await self._connection.command(
+            "scaleWithOffset", self._prepared_params([scale, origin])
+        )
+        self._check_empty(response)
+
+    async def select(self, ids : list[ids]) -> Selection:
+        response = await self._connection.command(
+            "select", self._prepared_params([ids])
+        )
+        return [selection_factory(self._connection, subitem) for subitem in response]
+
+    async def select_all(self) -> None:
+        response = await self._connection.command(
+            "selectAll", self._prepared_params([])
+        )
+        self._check_empty(response)
+
+    async def set_content_crop(self) -> None:
+        response = await self._connection.command(
+            "setContentCrop", self._prepared_params([])
+        )
+        self._check_empty(response)
+
+    async def set_parent(self, folder_id: str)) -> None:
+        response = await self._connection.command(
+            "setParent", self._prepared_params([folder_id])
+        )
+        self._check_empty(response)
+
+    async def set_recording_visible(self, recording_visible : bool) -> None:
+        response = await self._connection.command(
+                "setRecordingVisible", self._prepared_params([recording_visible])
+                )
+        self._check_empty(response)
+
+    async def set_settings(self, settings: dict) -> None:
+        response = await self._connection.command(
+                "setSettings", self._prepared_params([settings])
+                )
+        self._check_empty(response)
+
+    async def set_stream_visible(self, stream_visible : bool) -> None:
+        response = await self._connection.command(
+                "setStreamVisible", self._prepared_params([stream_visible])
+                )
+        self._check_empty(response)
+
+    async def set_transform(self, transform : IPartialTransform) -> None:
+        # The definition of IPartialTransform is a dictionary that may optionally
+        # contain:
+        #    position (2-tuple)
+        #    scale (2-tuple)
+        #    crop (a dictionary that may contain top, bottom, left, right mapping to
+        #           ints)
+        #    rotation
+        response = await self._connection.command(
+                "setTransform", self._prepared_params([transform])
+                )
+        self._check_empty(response)
+
+    async def set_visibility(self, visible: boolean) -> None:
+        response = await self._connection.command(
+            "setVisibility", self._prepared_params([visible])
+        )
+        self._check_empty(response)
+
+    async def stretch_to_screen(self) -> None:
+        response = await self._connection.command(
+            "stretchToScreen", self._prepared_params([])
+        )
+        self._check_empty(response)

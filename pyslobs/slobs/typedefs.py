@@ -134,3 +134,5 @@ ISceneCollectionsManifestEntry = namedtuple("ISceneCollectionsManifestEntry", "i
 ISceneCollectionSchema = namedtuple("ISceneCollectionSchema", "id name scenes sources")
 
 ISceneCollectionCreateOptions = namedtuple("ISceneCollectionCreateOptions", "name")
+
+ISelectionModel = namedtuple("ISelectionModel", "last_selected_id selected_ids")
