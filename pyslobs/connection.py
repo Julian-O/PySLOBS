@@ -10,9 +10,6 @@ from websocket import create_connection, WebSocketTimeoutException
 from .pubsubhub import PubSubHub, SubscriptionPreferences
 
 
-LOGGER = logging.getLogger("slobsapi.connection")
-
-
 class AuthenticationFailure(Exception):
     pass
 
@@ -36,6 +33,8 @@ class _SlobsWebSocket:
     It does NOT use asyncio.
     """
 
+    logger = logging.getLogger("slobsapi._SlobsWebSocket")
+
     def __init__(self, token, domain="localhost", port=59650, on_close=None):
         self.url = f"ws://{domain}:{port}/api/websocket"
         self.token = token
@@ -51,12 +50,14 @@ class _SlobsWebSocket:
 
     def send_message(self, id_, method, params) -> None:
         message_json = json.dumps(self._build_params_dict(id_, method, params))
+        self.logger.debug("Sending:  %s", message_json)
         self.socket.send(message_json)
 
     def receive_message(self):
         while self.socket:
             try:
                 raw_message = self.socket.recv()
+                self.logger.debug("Received: %s", raw_message)
                 if not raw_message:
                     break
                 else:
@@ -118,6 +119,8 @@ class SlobsConnection:
         Handling the transition from sync to async.
     """
 
+    logger = logging.getLogger("slobsapi.SlobsConnection")
+
     def __init__(self, token, domain="localhost", port=59650):
         self.websocket = _SlobsWebSocket(token, domain, port, on_close=None)
 
@@ -169,7 +172,6 @@ class SlobsConnection:
             while self.websocket and self.websocket.is_alive():
                 try:
                     message = await self._receive_message()
-                    LOGGER.debug("Received message to dispatch: %s", message)
 
                     if message:
                         if "id" in message and message["id"] is not None:
@@ -188,7 +190,8 @@ class SlobsConnection:
                         break
                     raise
         except Exception:
-            LOGGER.exception("_receive_and_dispatch failing.")
+            self.logger.exception("_receive_and_dispatch failing.")
+            raise
 
         await self.close()
 
@@ -200,7 +203,7 @@ class SlobsConnection:
         Send a command that expects a response.
         Wait for result. If the result returns a promise, wait for the promise.
         """
-        LOGGER.debug("Command being sent: %s(%s)", method, params)
+        self.logger.debug("Command being sent: %s(%s)", method, params)
         message_id = await self._send(method, params)
         final_response_queue = asyncio.Queue()  # Callback will push the response here.
 
@@ -210,7 +213,7 @@ class SlobsConnection:
                     key, value, final_response_queue
                 )
             except Exception:
-                LOGGER.exception("command.callback has failed!")
+                self.logger.exception("command.callback has failed!")
 
         assert asyncio.iscoroutinefunction(callback)
         await self.hub.subscribe(key=message_id, callback_coroutine=callback)
@@ -246,7 +249,7 @@ class SlobsConnection:
                             k, v, response_as_event_queue
                         )
                     except Exception:
-                        LOGGER.exception(
+                        self.logger.exception(
                             "_command_accept_result_of_promise.callback has failed!"
                         )
 
@@ -257,14 +260,14 @@ class SlobsConnection:
             else:
                 await queue.put(result)
         except Exception:
-            LOGGER.exception("_command_accept_result_of_promise has failed!")
+            self.logger.exception("_command_accept_result_of_promise has failed!")
 
     @staticmethod
     async def _command_accept_event_as_response(_, response, queue) -> None:
         try:
             await queue.put(response)
         except Exception:
-            LOGGER.exception("_command_accept_event_as_response has failed!")
+            self.logger.exception("_command_accept_event_as_response has failed!")
 
     async def subscribe(
         self,
@@ -314,7 +317,7 @@ class SlobsConnection:
                 raise ProtocolError("Unsubscribe failed.")
 
     async def close(self):
-        LOGGER.debug("Request to close connection.")
+        self.logger.debug("Request to close connection.")
         if self.websocket:
             socket_to_close = self.websocket
             self.websocket = None  # So we don't recurse.
