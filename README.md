@@ -29,15 +29,14 @@ Rather than accessing it from Javascript, this Python wrapper allows access to
 Streamlabs OBS from a Python application. The details about websockets are hidden
 and more Pythonic interfaces are provided.
 
-This Python wrapper is based on `asyncio`. If you have not used the `asyncio` features
-of Python before, please consult a tutorial.
-
-##### Versions
+#### Versions
 
 Python 3.7 is the minimum, and has not been tested.
 Python 3.9 is recommended, and has been tested.
 
-##### Clean Python
+StreamLabs OBS 0.27.1 has been tested.
+
+##### Pythonic names and types
 
 The Python interface is designed to allow you to write PEP8-compliant Python code.
 
@@ -53,18 +52,34 @@ Identifiers that clash with reserved words used in Python are suffixed with `_` 
 Date-times from notifications do not have a timezone associated with them. They  are in
 the timezone of the host running the API. 
 
-### Alpha Release
+### Testing Progress.
 
-The API is moderately large. This version of the Python wrapper does NOT cover all of it
-- or even a large proportion of it. It is focussed on the areas the developers actively
-want to use first. However, the aim is to have a sufficient prepared infrastructure that
-extending it out it a fairly rote task.
+The API is moderately large. In this version of the Python wrapper, not every method
+offered has been tested. It is focussed on the areas the developers actively
+want to use first.
 
-See `PROGRESS.md` for an idea of what is and isn't implemented.
+See `PROGRESS.md` for an idea of what is and isn't tested.
 
 ### Usage
 
-### Authentication
+#### Calling asyncio libraries
+
+This Python wrapper is based on `asyncio`. If you have not used the `asyncio` features
+of Python before, please consult a tutorial. In particular:
+
+* You need to `await` all methods defined as async. Similarly, context managers defined
+  as async need to be called with `async with`.
+  
+* After creation, remember to await the `SlobsConnection.background_processing()`
+  coroutine.
+
+* To shut-down cleanly, remember to close the connection. when you are finished running your code to 
+
+* To avoid exceptions being swallowed, handle them in your top-level code.
+
+See the example code.
+
+#### Authentication
 
 To connect to StreamLabs OBS, you must be authenticated. 
 See `tests\config.py` for instructions.
@@ -141,7 +156,7 @@ Objects may have properties (such as names) that can be accessed. Be careful tha
 values of these properties may be out-of-date if the value was changed within the app
 or if it was changed through a different instance referencing the same SLOBS resource.
 
-Objects can be used to fetch other Objects or `namedtuples` describing other records 
+Objects can be used to fetch other Objects or `namedtuple`s describing other records 
 in the API.
 
 #### Subscriptions
@@ -160,3 +175,9 @@ See `tests\config.py` for instructions on authentication.
 ## Special cases:
 
 * Sources have an additional field `configurable` which isn't documented.
+* Sources have a method `refresh` which raises an Internal Server Error. This has been
+  reported to StreamLabs.
+* `SceneCollectionsService` methods sometimes raise Internal Server Errors if called 
+  too rapidly.
+* `TransitionsService` methods sometimes raise Internal Server Errors if called 
+  too rapidly.
