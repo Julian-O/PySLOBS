@@ -238,7 +238,7 @@ class SelectionBase:
         )
         self._check_empty(response)
 
-    async def set_parent(self, folder_id: str)) -> None:
+    async def set_parent(self, folder_id: str) -> None:
         response = await self._connection.command(
             "setParent", self._prepared_params([folder_id])
         )

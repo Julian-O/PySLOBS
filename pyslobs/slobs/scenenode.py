@@ -4,7 +4,10 @@ from .factories import (
     scenenode_factory,
     sceneitem_factory,
     sceneitemfolder_factory,
-    scene_factory, source_factory, register
+    scene_factory,
+    selection_factory,
+    source_factory,
+    register,
 )
 from ..apibase import SlobsClass
 from .typedefs import ITransform, TSceneNodeType, ISceneNodeModel
@@ -131,7 +134,6 @@ class SceneNode(SlobsClass):
 
     async def is_item(self):
         response = await self._connection.command("isItem", self._prepared_params())
-        print("What does this return? It says *this*, but expect *bool*", response)
         return response
 
     async def is_selected(self) -> bool:
@@ -198,7 +200,12 @@ class SceneItemFolder(SceneNode):
     def name(self):
         return self._name
 
-    # add
+    async def add(self, scene_node_id: str):
+        response = await self._connection.command(
+            "add", self._prepared_params([scene_node_id])
+        )
+        self._check_empty(response)
+
     async def get_folders(self) -> list[SceneItemFolder]:
         response = await self._connection.command("getFolders", self._prepared_params())
         return [sceneitemfolder_factory(json_dict) for json_dict in response]
@@ -223,9 +230,21 @@ class SceneItemFolder(SceneNode):
             scenenode_factory(self._connection, json_dict) for json_dict in response
         ]
 
-    # getSelection
-    # setName
-    # ungroup
+    async def get_selection(self) -> Selection:
+        response = await self._connection.command(
+            "getSelection", self._prepared_params()
+        )
+        return selection_factory(self._connection, json_dict)
+
+    async def set_name(self, parent_id: str):
+        response = await self._connection.command(
+            "setParent", self._prepared_params([parent_id])
+        )
+        self._check_empty(response)
+
+    async def ungroup(self):
+        response = await self._connection.command("ungroup", self._prepared_params())
+        self._check_empty(response)
 
 
 class SceneItem(SceneNode):
@@ -307,24 +326,16 @@ class SceneItem(SceneNode):
         self._check_empty(response)
 
     async def flip_x(self):
-        response = await self._connection.command(
-            "flipX", self._prepared_params()
-        )
+        response = await self._connection.command("flipX", self._prepared_params())
         self._check_empty(response)
+
     async def flip_y(self):
-        response = await self._connection.command(
-            "flipY", self._prepared_params()
-        )
+        response = await self._connection.command("flipY", self._prepared_params())
         self._check_empty(response)
-
-
 
     async def get_source(self):
-        response = await self._connection.command(
-            "getSource", self._prepared_params()
-        )
+        response = await self._connection.command("getSource", self._prepared_params())
         return source_factory(self._connection, response)
-
 
     async def reset_transform(self, deg):
         response = await self._connection.command(
@@ -344,17 +355,50 @@ class SceneItem(SceneNode):
         )
         self._check_empty(response)
 
+    async def set_scale(new_scale_model: IVec2, origin: Option[IVec2]) -> None:
+        response = await self._connection.command(
+            "setScale", self._prepared_params(new_scale_model, origin)
+        )
+        self._check_empty(response)
 
-    # setScale
-    # setSettings
-    # setTransform
+    async def set_settings(settings: dict[Any]) -> None:
+        response = await self._connection.command(
+            "setSettings",
+            self._prepared_params(
+                [
+                    {
+                        "locked": settings.get("locked", None),
+                        "recording_visible": settings.get("recordingVisible", None),
+                        "stream_visible": settings.get("streamVisible", None),
+                        "transform": settings.get("transform", None),
+                        "visible": settings.get("visible", None),
+                    }
+                ]
+            ),
+        )
+        self._check_empty(response)
+
+    async def set_transform(self, transform: ITransform):
+        response = await self._connection.command(
+            "setTransform",
+            self._prepared_params(
+                [
+                    {
+                        "crop": transform.get("crop", None),
+                        "position": transform.get("position", None),
+                        "rotation": transform.get("rotation", None),
+                        "scale": transform.get("scale", None),
+                    }
+                ]
+            ),
+        )
+        self._check_empty(response)
 
     async def set_visibility(self, visible):
         response = await self._connection.command(
             "setVisibility", self._prepared_params([visible])
         )
         self._check_empty(response)
-
 
     async def stretch_to_screen(self):
         response = await self._connection.command(
