@@ -180,16 +180,28 @@ async def str_source_multiline(source, indent):
 def str_scenecollectionschemascene_multiline(sceneref, indent):
     return indent + "+- Scene Reference: " + sceneref["name"]
 
+
 def str_scenecollectionschemasources_multiline(sourceref, indent):
     return (
-            indent +
-            "+- Source reference list\n"
-            + "\n".join(
+        indent
+        + "+- Source reference list\n"
+        + "\n".join(
             str_scenecollectionschemasource_multiline(subsourceref, indent + "|   ")
-            for subsourceref in sourceref))
+            for subsourceref in sourceref
+        )
+    )
+
 
 def str_scenecollectionschemasource_multiline(sourceref, indent):
-        return indent + "+- Source Reference:" + sourceref["name"] + " (" + sourceref["type"] + ")"
+    return (
+        indent
+        + "+- Source Reference:"
+        + sourceref["name"]
+        + " ("
+        + sourceref["type"]
+        + ")"
+    )
+
 
 def str_scenecollectionschema_multiline(schema, indent):
     return (
@@ -205,6 +217,5 @@ def str_scenecollectionschema_multiline(schema, indent):
         + "\n".join(
             str_scenecollectionschemasources_multiline(sourceref, indent + "|    ")
             for sourceref in schema.sources
-            )
-
+        )
     )
