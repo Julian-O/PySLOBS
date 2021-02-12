@@ -69,9 +69,9 @@ class _SlobsWebSocket:
                         raise ProtocolError(type_error)
                     return result
             except WebSocketTimeoutException:
-                LOGGER.debug("Retrying after timeout.")
+                self.logger.debug("Retrying after timeout.")
             except OSError as e:
-                LOGGER.warning(
+                self.logger.warning(
                     "OSError received. Probably socket was closed. Retrying: %s", e
                 )
                 time.sleep(1)  # To prevent busy-loop
