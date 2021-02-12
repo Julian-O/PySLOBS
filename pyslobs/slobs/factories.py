@@ -5,7 +5,7 @@
     This code should not be used by the client, but it is shared between a
     number of SlobsService and SlobsClasses so it has been grouped together.
 """
-from .typedefs import TSceneNodeType
+from .typedefs import TSceneNodeType, ITransform
 
 CLASSES = {}
 
@@ -31,6 +31,12 @@ def scenenode_factory(connection, json_dict):
 
 
 def sceneitem_factory(connection, json_dict):
+    # We see inconsistency in choices of API here.
+    if isinstance(json_dict["transform"]["position"], list):
+        transform_position = {"x": json_dict["transform"]["position"][0],
+                              "y": json_dict["transform"]["position"][1]}
+    else:
+        transform_position = json_dict["transform"]["position"]
     return CLASSES["SceneItem"](
         connection=connection,
         resource_id=json_dict["resourceId"],
@@ -46,10 +52,13 @@ def sceneitem_factory(connection, json_dict):
         recording_visible=json_dict["recordingVisible"],
         scene_item_id=json_dict["sceneItemId"],
         stream_visible=json_dict["streamVisible"],
-        transform="TBD",
-        # 'transform': {'position': {'x': 0, 'y': 0}, 'scale': {'x': 1, 'y': 1},
-        #               'crop': {'top': 0, 'bottom': 0, 'left': 0, 'right': 0},
-        #               'rotation': 0},
+        transform=ITransform(
+            # Not showing full commitment here. Should make these sub-dictionaries
+            # into named tuples as well.
+            crop=json_dict["transform"]["crop"],
+            position=transform_position,
+            rotation=json_dict["transform"]["rotation"],
+            scale=json_dict["transform"]["scale"]),
         visible=json_dict["visible"],
     )
 

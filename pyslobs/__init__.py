@@ -16,6 +16,7 @@ from .slobs.typedefs import (
     TSceneNodeType,
     ISourceAddOptions,
     ISceneCollectionCreateOptions,
+    ITransform,
 )
 
 __all__ = [
@@ -36,4 +37,5 @@ __all__ = [
     "TSceneNodeType",
     "ISourceAddOptions",
     "ISceneCollectionCreateOptions",
+    "ITransform",
 ]
