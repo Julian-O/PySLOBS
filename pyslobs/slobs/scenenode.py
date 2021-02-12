@@ -286,7 +286,7 @@ class SceneItem(SceneNode):
         self._visible = visible
 
     @property
-    def name(self):
+    def locked(self):
         return self._locked
 
     @property
@@ -384,10 +384,10 @@ class SceneItem(SceneNode):
             self._prepared_params(
                 [
                     {
-                        "crop": transform.get("crop", None),
-                        "position": transform.get("position", None),
-                        "rotation": transform.get("rotation", None),
-                        "scale": transform.get("scale", None),
+                        "crop": transform.crop,
+                        "position": transform.position,
+                        "rotation": transform.rotation,
+                        "scale": transform.scale,
                     }
                 ]
             ),
