@@ -1,10 +1,7 @@
 import asyncio
 import logging
 
-from pyslobs import SlobsConnection
-
-from config import token
-
+from pyslobs import SlobsConnection, config_from_ini_else_stdin
 
 async def closing_exercise(conn, exercise):
     await exercise(conn)
@@ -12,7 +9,7 @@ async def closing_exercise(conn, exercise):
 
 
 async def connect_and_wait(exercise) -> None:
-    conn = SlobsConnection(token())
+    conn = SlobsConnection(config_from_ini_else_stdin())
     await asyncio.gather(conn.background_processing(), closing_exercise(conn, exercise))
 
 

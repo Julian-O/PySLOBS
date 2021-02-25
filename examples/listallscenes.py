@@ -2,8 +2,7 @@ import asyncio
 import logging
 from pprint import pprint
 
-from pyslobs import SlobsConnection, ScenesService
-from tests.config import token
+from pyslobs import SlobsConnection, ScenesService, config_from_ini_else_stdin
 
 async def list_all_scenes(conn):
     print("Available scenes:")
@@ -15,7 +14,7 @@ async def list_all_scenes(conn):
 
 
 async def main():
-    conn = SlobsConnection(token())
+    conn = SlobsConnection(config_from_ini_else_stdin())
     await asyncio.gather(conn.background_processing(), list_all_scenes(conn))
 
 

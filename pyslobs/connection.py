@@ -3,10 +3,11 @@ from collections import defaultdict
 import json
 import logging
 import time
-from typing import Any
+from typing import Any, Optional
 
 from websocket import create_connection, WebSocketTimeoutException
 
+from .config import ConnectionConfig, config_from_ini
 from .pubsubhub import PubSubHub, SubscriptionPreferences
 
 
@@ -35,9 +36,14 @@ class _SlobsWebSocket:
 
     logger = logging.getLogger("slobsapi._SlobsWebSocket")
 
-    def __init__(self, token, domain="localhost", port=59650, on_close=None):
-        self.url = f"ws://{domain}:{port}/api/websocket"
-        self.token = token
+    def __init__(
+        self, connection_config: ConnectionConfig, on_close=None
+    ):
+
+        self.url = (
+            f"ws://{connection_config.domain}:{connection_config.port}/api/websocket"
+        )
+        self.token = connection_config.token
         self._on_close = on_close
         try:
             self.socket = create_connection(self.url, timeout=20)
@@ -121,8 +127,13 @@ class SlobsConnection:
 
     logger = logging.getLogger("slobsapi.SlobsConnection")
 
-    def __init__(self, token, domain="localhost", port=59650):
-        self.websocket = _SlobsWebSocket(token, domain, port, on_close=None)
+    def __init__(self, connection_config : Optional[ConnectionConfig]):
+
+        connection_config = connection_config or config_from_ini()
+        if not connection_config:
+            raise ProtocolError("Connection not configured.")
+
+        self.websocket = _SlobsWebSocket(connection_config, on_close=None)
 
         self._response_listeners = dict()
         self._event_listeners = defaultdict(lambda: set())

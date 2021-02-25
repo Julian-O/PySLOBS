@@ -1,3 +1,4 @@
+from .config import ConnectionConfig, config_from_ini_else_stdin, config_from_ini
 from .connection import AuthenticationFailure, ProtocolError, SlobsConnection
 from .pubsubhub import SubscriptionPreferences, CLOSED, UNSUBSCRIBED
 from .slobs.audioservice import AudioService

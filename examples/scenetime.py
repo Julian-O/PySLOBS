@@ -12,8 +12,13 @@ from collections import defaultdict
 import logging
 import time
 
-from tests.config import token
-from pyslobs import SlobsConnection, SubscriptionPreferences, CLOSED, ScenesService
+from pyslobs import (
+    SlobsConnection,
+    SubscriptionPreferences,
+    CLOSED,
+    ScenesService,
+    config_from_ini_else_stdin,
+)
 
 
 class SceneTime:
@@ -85,7 +90,7 @@ async def scene_time(conn):
 
 
 async def main():
-    conn = SlobsConnection(token())
+    conn = SlobsConnection(config_from_ini_else_stdin())
     await asyncio.gather(conn.background_processing(), scene_time(conn))
 
 

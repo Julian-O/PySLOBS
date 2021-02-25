@@ -6,8 +6,12 @@ import asyncio
 import logging
 import math
 
-from tests.config import token
-from pyslobs import SlobsConnection, ScenesService, ITransform
+from pyslobs import (
+    SlobsConnection,
+    ScenesService,
+    ITransform,
+    config_from_ini_else_stdin,
+)
 
 
 class Spinnable:
@@ -74,9 +78,11 @@ async def spin(conn):
         spinnables = []
         for item in await active_scene.get_items():
             source = await item.get_source()
-            spinnables.append(
-                Spinnable(item, item.transform, (source.width, source.height))
-            )
+            # Some items have no size, so can't be spun
+            if source.width and source.height:
+                spinnables.append(
+                    Spinnable(item, item.transform, (source.width, source.height))
+                )
 
         for rotate_angle_deg in range(360 + 1):
             for spinnable in spinnables:
@@ -91,7 +97,8 @@ async def spin(conn):
 
 
 async def main():
-    conn = SlobsConnection(token())
+    conn = SlobsConnection(config_from_ini_else_stdin())
+
     await asyncio.gather(conn.background_processing(), spin(conn))
 
 
