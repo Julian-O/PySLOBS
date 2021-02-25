@@ -31,8 +31,8 @@ and more Pythonic interfaces are provided.
 
 ### Versions
 
-Python 3.7 is the minimum, and has not been tested.
-Python 3.9 is recommended, and has been tested.
+This API requires Python 3.9. (If there is a good reason you need an
+earlier version of Python, please raise a GitHub issue.)
 
 StreamLabs OBS 0.27.1 has been tested.
 
@@ -261,9 +261,9 @@ special values: `UBSUBSCRIBED` and `CLOSED` as appropriate.
 ## Examples:
 
 The examples folder contains many small programs to demonstrate how to use the
-API.
-
-See `tests\config.py` for instructions on authentication.
+API. These are not included with the package, but can be found on the GitHub 
+site. Install PySlobs, copy the raw example files to your machine, start your 
+copy of Stream Labs OBS, and run the examples (once PySlobs is installed).  
 
 ## Special cases:
 
