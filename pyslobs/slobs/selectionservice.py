@@ -1,5 +1,6 @@
 from ..apibase import SlobsService
 from .selectionbase import SelectionBase
+from .selection import Selection # For the side-effects
 
 
 class SelectionService(SlobsService, SelectionBase):
