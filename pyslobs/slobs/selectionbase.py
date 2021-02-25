@@ -105,7 +105,7 @@ class SelectionBase:
         response = await self._connection.command("getItems", self._prepared_params([]))
         return sceneitem_factory(self._connection, response)
 
-    async def getLastSelected(self) -> SceneNode:
+    async def get_last_selected(self) -> SceneNode:
         response = await self._connection.command(
             "getLastSelectedId", self._prtepared_params()
         )
@@ -230,7 +230,10 @@ class SelectionBase:
         response = await self._connection.command(
             "selectAll", self._prepared_params([])
         )
-        self._check_empty(response)
+        return ISelectionModel(
+            last_selected_id=response.get("lastSelectedId", []),
+            selected_ids=response["selectedIds"],
+        )
 
     async def set_content_crop(self) -> None:
         response = await self._connection.command(
