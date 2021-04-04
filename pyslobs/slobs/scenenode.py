@@ -160,7 +160,7 @@ class SceneNode(SlobsClass):
         response = await self._connection.command("select", self._prepared_params())
         self._check_empty(response)
 
-    async def setParent(self, parent_id: str) -> None:
+    async def set_parent(self, parent_id: str) -> None:
         response = await self._connection.command(
             "setParent", self._prepared_params([node_id])
         )
