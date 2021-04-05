@@ -355,13 +355,13 @@ class SceneItem(SceneNode):
         )
         self._check_empty(response)
 
-    async def set_scale(new_scale_model: IVec2, origin: Option[IVec2]) -> None:
+    async def set_scale(self, new_scale_model: IVec2, origin: Option[IVec2]) -> None:
         response = await self._connection.command(
             "setScale", self._prepared_params(new_scale_model, origin)
         )
         self._check_empty(response)
 
-    async def set_settings(settings: dict[Any]) -> None:
+    async def set_settings(self, settings: dict[Any]) -> None:
         response = await self._connection.command(
             "setSettings",
             self._prepared_params(
