@@ -55,7 +55,7 @@ class Scene(SlobsClass):
         raise scenenode_factory(self._connection, response)
 
     async def add_source(
-        self, source_id: str, options: Optional[ISceneNodeAddOptions]
+        self, source_id: str, options: Optional[ISceneNodeAddOptions] = None
     ) -> bool:
         options_dict = {}
         if options:
@@ -73,7 +73,7 @@ class Scene(SlobsClass):
         response = await self._connection.command(
             "addSource", self._prepared_params([source_id, options_dict])
         )
-        return response
+        return sceneitem_factory(self._connection, response)
 
     async def can_add_source(self, source_id: str) -> bool:
         response = await self._connection.command(
@@ -94,10 +94,10 @@ class Scene(SlobsClass):
         return sceneitem_factory(self._connection, response)
 
     async def create_folder(
-        self, name: str, type_: TSourceType, settings: Optional[dict[Any]]
+        self, name: str
     ): # -> SceneItem:
         response = await self._connection.command(
-            "createFolder", self._prepared_params([name, type_, settings])
+            "createFolder", self._prepared_params([name])
         )
         return sceneitemfolder_factory(self._connection, response)
 
