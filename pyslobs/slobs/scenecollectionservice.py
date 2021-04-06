@@ -63,7 +63,7 @@ class SceneCollectionsService(SlobsService):
         )
         return iscenecollectionmanifestentry_factory(response)
 
-    async def delete(self, id: Optional[str]) -> None:
+    async def delete(self, id: Optional[str] = None) -> None:
         response = await self._connection.command("delete", self._prepared_params([id]))
         self._check_empty(response)
 

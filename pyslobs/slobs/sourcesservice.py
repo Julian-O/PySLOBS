@@ -30,8 +30,8 @@ class SourcesService(SlobsService):
         self,
         name: str,
         type_: TSourceType,
-        settings: Optional[Dict],
-        options: Optional[ISourceAddOptions],
+        settings: Optional[Dict] = None,
+        options: Optional[ISourceAddOptions] = None,
     ) -> Source:
         options_dict = (
             {}

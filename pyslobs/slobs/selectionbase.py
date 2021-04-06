@@ -1,7 +1,7 @@
 from __future__ import annotations  # Postponed eval of annotations. Fixed in 3.10
 from typing import Optional
 
-from .typedefs import IRectangle, ISelectionModel
+from .typedefs import IRectangle, ISelectionModel, IVec2
 from .scenenode import SceneNode
 from .factories import (
     selection_factory,
@@ -36,7 +36,10 @@ class SelectionBase:
         return selection_factory(self._connection, response)
 
     async def copy_to(
-        self, scene_id: str, folder_id: Optional[str], duplicate_sources: Optional[bool]
+        self,
+        scene_id: str,
+        folder_id: Optional[str] = None,
+        duplicate_sources: Optional[bool] = None,
     ) -> None:
         response = await self._connection.command(
             "copyTo", self._prepared_params([scene_id, folder_id, duplicate_sources])
@@ -170,7 +173,7 @@ class SelectionBase:
         )
         return response
 
-    async def move_to(self, scene_id: str, folder_id: Optional[str]) -> None:
+    async def move_to(self, scene_id: str, folder_id: Optional[str] = None) -> None:
         response = await self._connection.command(
             "moveTo", self._prepared_params([scene_id, folder_id])
         )
@@ -208,19 +211,19 @@ class SelectionBase:
         )
         self._check_empty(response)
 
-    async def scale(self, scale: IVec2, origin: Optional[IVec2]) -> None:
+    async def scale(self, scale: IVec2, origin: Optional[IVec2] = None) -> None:
         response = await self._connection.command(
             "resetTransform", self._prepared_params([scale, origin])
         )
         self._check_empty(response)
 
-    async def scale_with_offset(self, scale : IVec2, offset: IVec2) -> None:
+    async def scale_with_offset(self, scale: IVec2, offset: IVec2) -> None:
         response = await self._connection.command(
             "scaleWithOffset", self._prepared_params([scale, origin])
         )
         self._check_empty(response)
 
-    async def select(self, ids : list[ids]) -> Selection:
+    async def select(self, ids: list[ids]) -> Selection:
         response = await self._connection.command(
             "select", self._prepared_params([ids])
         )
@@ -247,25 +250,25 @@ class SelectionBase:
         )
         self._check_empty(response)
 
-    async def set_recording_visible(self, recording_visible : bool) -> None:
+    async def set_recording_visible(self, recording_visible: bool) -> None:
         response = await self._connection.command(
-                "setRecordingVisible", self._prepared_params([recording_visible])
-                )
+            "setRecordingVisible", self._prepared_params([recording_visible])
+        )
         self._check_empty(response)
 
     async def set_settings(self, settings: dict) -> None:
         response = await self._connection.command(
-                "setSettings", self._prepared_params([settings])
-                )
+            "setSettings", self._prepared_params([settings])
+        )
         self._check_empty(response)
 
-    async def set_stream_visible(self, stream_visible : bool) -> None:
+    async def set_stream_visible(self, stream_visible: bool) -> None:
         response = await self._connection.command(
-                "setStreamVisible", self._prepared_params([stream_visible])
-                )
+            "setStreamVisible", self._prepared_params([stream_visible])
+        )
         self._check_empty(response)
 
-    async def set_transform(self, transform : IPartialTransform) -> None:
+    async def set_transform(self, transform: IPartialTransform) -> None:
         # The definition of IPartialTransform is a dictionary that may optionally
         # contain:
         #    position (2-tuple)
@@ -274,8 +277,8 @@ class SelectionBase:
         #           ints)
         #    rotation
         response = await self._connection.command(
-                "setTransform", self._prepared_params([transform])
-                )
+            "setTransform", self._prepared_params([transform])
+        )
         self._check_empty(response)
 
     async def set_visibility(self, visible: boolean) -> None:
