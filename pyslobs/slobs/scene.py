@@ -56,7 +56,7 @@ class Scene(SlobsClass):
 
     async def add_source(
         self, source_id: str, options: Optional[ISceneNodeAddOptions] = None
-    ) -> bool:
+    ) -> SceneNode:
         options_dict = {}
         if options:
             if options.id is not None:
@@ -86,7 +86,7 @@ class Scene(SlobsClass):
         self._check_empty(response)
 
     async def create_and_add_source(
-        self, name: str, type_: TSourceType, settings: Optional[dict[Any]]
+        self, name: str, type_: TSourceType, settings: Optional[dict[Any]] = None
     ): # -> SceneItem:
         response = await self._connection.command(
             "createAndAddSource", self._prepared_params([name, type_, settings])
@@ -170,7 +170,7 @@ class Scene(SlobsClass):
         )
         return [scenenode_factory(self._connection, node) for node in response]
 
-    async def get_selection(self, ids: Optional[list[str]]):
+    async def get_selection(self, ids: Optional[list[str]] = None):
         response = await self._connection.command(
             "getSelection", self._prepared_params(ids)
         )
