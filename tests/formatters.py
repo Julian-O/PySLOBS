@@ -102,7 +102,9 @@ def str_itransitionsservicestate(state):
     return "Studio-Mode" if state.studio_mode else "Direct-Mode"
 
 
-async def str_scene_multiline(scene, indent, show_nodes=True, as_tree=False):
+async def str_scene_multiline(
+    scene, indent, show_nodes=True, as_tree=False, folders_first=False
+):
     if not show_nodes:
         nodes = ""
     elif not as_tree:
@@ -110,10 +112,14 @@ async def str_scene_multiline(scene, indent, show_nodes=True, as_tree=False):
             str_node(node) for node in scene.nodes
         )
     else:
+        node_formatter = (
+            str_node_tree_multiline_folders_first
+            if folders_first
+            else str_node_tree_multiline
+        )
         root_nodes = await scene.get_root_nodes()
         sub_item_strs = [
-            str(await str_node_tree_multiline(node, indent + "|"))
-            for node in root_nodes
+            str(await node_formatter(node, indent + "|")) for node in root_nodes
         ]
         nodes = "\n" + "".join(sub_item_strs)
 
@@ -155,6 +161,30 @@ async def str_node_tree_multiline(node, indent):
         ]
     )
     return first_line + trailing_lines
+
+
+async def str_node_tree_multiline_folders_first(node, indent):
+    first_line = indent + "    +- " + str_node(node) + "\n"
+    if node.scene_node_type == TSceneNodeType.ITEM:
+        return first_line
+
+    sub_nodes = await node.get_folders()
+    folder_lines = "".join(
+        [
+            (await str_node_tree_multiline_folders_first(sub_node, indent + "    |"))
+            for sub_node in sub_nodes
+        ]
+    )
+
+    sub_nodes = await node.get_items()
+    item_lines = "".join(
+        [
+            (await str_node_tree_multiline_folders_first(sub_node, indent + "    |"))
+            for sub_node in sub_nodes
+        ]
+    )
+
+    return first_line + folder_lines + item_lines
 
 
 async def str_source_multiline(source, indent):
