@@ -10,6 +10,7 @@ from pyslobs import (
     SlobsConnection,
     ScenesService,
     ITransform,
+    IVec2,
     config_from_ini_else_stdin,
 )
 
@@ -59,10 +60,10 @@ class Spinnable:
         result = ITransform(
             crop=self.original_transform.crop,
             scale=self.original_transform.scale,
-            position={
-                "x": self.original_transform.position["x"] + offset[0],
-                "y": self.original_transform.position["y"] + offset[1],
-            },
+            position=IVec2(
+                x=self.original_transform.position["x"] + offset[0],
+                y=self.original_transform.position["y"] + offset[1],
+                    ),
             rotation=self.original_transform.rotation + angle_deg,
         )
         return result
