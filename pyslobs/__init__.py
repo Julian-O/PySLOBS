@@ -18,6 +18,7 @@ from .slobs.typedefs import (
     ISourceAddOptions,
     ISceneCollectionCreateOptions,
     ITransform,
+    IVec2
 )
 
 __all__ = [

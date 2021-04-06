@@ -136,3 +136,6 @@ ISceneCollectionSchema = namedtuple("ISceneCollectionSchema", "id name scenes so
 ISceneCollectionCreateOptions = namedtuple("ISceneCollectionCreateOptions", "name")
 
 ISelectionModel = namedtuple("ISelectionModel", "last_selected_id selected_ids")
+
+IVec2 = namedtuple("IVec2", "x y")
+ICrop = namedtuple("ICrop", "bottom left right top")
