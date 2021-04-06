@@ -127,7 +127,7 @@ class SlobsConnection:
 
     logger = logging.getLogger("slobsapi.SlobsConnection")
 
-    def __init__(self, connection_config : Optional[ConnectionConfig]):
+    def __init__(self, connection_config : Optional[ConnectionConfig] = None):
 
         connection_config = connection_config or config_from_ini()
         if not connection_config:
