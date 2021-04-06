@@ -10,7 +10,7 @@ from .factories import (
     register,
 )
 from ..apibase import SlobsClass
-from .typedefs import ITransform, TSceneNodeType, ISceneNodeModel
+from .typedefs import ITransform, TSceneNodeType, ISceneNodeModel, IVec2
 
 
 class SceneNode(SlobsClass):
@@ -80,7 +80,7 @@ class SceneNode(SlobsClass):
 
     async def get_model(self):  # -> ISceneNodeModel:
         response = await self._connection.command("getModel", self._prepared_params())
-        return scenenode_factory(reponse)
+        return scenenode_factory(response)
 
     async def get_next_item(self):  # -> ISceneItem:
         response = await self._connection.command(
@@ -92,7 +92,7 @@ class SceneNode(SlobsClass):
         response = await self._connection.command(
             "getNextNode", self._prepared_params()
         )
-        return scenenode_factory(reponse)
+        return scenenode_factory(response)
 
     async def get_node_index(self) -> int:
         response = await self._connection.command(
@@ -100,9 +100,13 @@ class SceneNode(SlobsClass):
         )
         return response
 
-    async def get_parent(self) -> ISceneNodeModel:
+    async def get_parent(self) -> ISceneNodeModel | None:
         response = await self._connection.command("getParent", self._prepared_params())
-        return sceneitemfolder_factory(reponse)
+        if response:
+            return sceneitemfolder_factory(self._connection, response)
+        else:
+            # Sometimes returns nothing, which isn't in the spec.
+            return None
 
     async def get_path(self) -> str:
         response = await self._connection.command("getPath", self._prepared_params())
@@ -118,7 +122,7 @@ class SceneNode(SlobsClass):
         response = await self._connection.command(
             "getPrevNode", self._prepared_params()
         )
-        return scenenode_factory(reponse)
+        return scenenode_factory(response)
 
     async def get_scene(self):
         response = await self._connection.command("getScene", self._prepared_params())
@@ -162,7 +166,7 @@ class SceneNode(SlobsClass):
 
     async def set_parent(self, parent_id: str) -> None:
         response = await self._connection.command(
-            "setParent", self._prepared_params([node_id])
+            "setParent", self._prepared_params([parent_id])
         )
         self._check_empty(response)
 
@@ -208,7 +212,10 @@ class SceneItemFolder(SceneNode):
 
     async def get_folders(self) -> list[SceneItemFolder]:
         response = await self._connection.command("getFolders", self._prepared_params())
-        return [sceneitemfolder_factory(json_dict) for json_dict in response]
+        return [
+            sceneitemfolder_factory(self._connection, json_dict)
+            for json_dict in response
+        ]
 
     async def get_items(self) -> list[SceneItem]:
         response = await self._connection.command("getItems", self._prepared_params())
@@ -236,11 +243,12 @@ class SceneItemFolder(SceneNode):
         )
         return selection_factory(self._connection, json_dict)
 
-    async def set_name(self, parent_id: str):
+    async def set_name(self, new_name: str):
         response = await self._connection.command(
-            "setParent", self._prepared_params([parent_id])
+            "setName", self._prepared_params([new_name])
         )
         self._check_empty(response)
+        self._name = new_name
 
     async def ungroup(self):
         response = await self._connection.command("ungroup", self._prepared_params())
@@ -337,9 +345,9 @@ class SceneItem(SceneNode):
         response = await self._connection.command("getSource", self._prepared_params())
         return source_factory(self._connection, response)
 
-    async def reset_transform(self, deg):
+    async def reset_transform(self):
         response = await self._connection.command(
-            "resetTransform", self._prepared_params([deg])
+            "resetTransform", self._prepared_params()
         )
         self._check_empty(response)
 
@@ -355,42 +363,61 @@ class SceneItem(SceneNode):
         )
         self._check_empty(response)
 
-    async def set_scale(self, new_scale_model: IVec2, origin: Option[IVec2]) -> None:
+    async def set_scale(
+        self, new_scale_model: IVec2, origin: Option[IVec2] = None
+    ) -> None:
+        scm_params = {
+            "x": new_scale_model.x,
+            "y": new_scale_model.y,
+        }
+        if not origin:
+            params = [scm_params]
+        else:
+            origin_params = {
+                "x": origin.x,
+                "y": origin.y,
+            }
+            params = [scm_params, origin_params]
+
         response = await self._connection.command(
-            "setScale", self._prepared_params(new_scale_model, origin)
+            "setScale", self._prepared_params(params)
         )
         self._check_empty(response)
+        self._transform = ITransform(
+            crop=self._transform.crop,
+            position=origin if origin else self.transform.position,
+            rotation=self._transform.rotation,
+            scale=new_scale_model,
+        )
 
     async def set_settings(self, settings: dict[Any]) -> None:
+        params = {}
+        if settings.get("locked", None) is not None:
+            params["locked"] = settings["locked"]
+            self._locked = settings["locked"]
+        if settings.get("recording_visible", None) is not None:
+            params["recordingVisible"] = settings["recording_visible"]
+            self._recording_visible = settings["recording_visible"]
+        if settings.get("stream_visible", None) is not None:
+            params["streamVisible"] = settings["stream_visible"]
+            self._stream_visible = settings["stream_visible"]
+        if settings.get("transform", None) is not None:
+            params["transform"] = self.marshall_transform(settings["transform"])
+            self._transform = settings["transform"]
+        if settings.get("visible", None) is not None:
+            params["visible"] = settings["visible"]
+            self._visible = settings["visible"]
+
         response = await self._connection.command(
             "setSettings",
-            self._prepared_params(
-                [
-                    {
-                        "locked": settings.get("locked", None),
-                        "recording_visible": settings.get("recordingVisible", None),
-                        "stream_visible": settings.get("streamVisible", None),
-                        "transform": settings.get("transform", None),
-                        "visible": settings.get("visible", None),
-                    }
-                ]
-            ),
+            self._prepared_params([params]),
         )
         self._check_empty(response)
 
     async def set_transform(self, transform: ITransform):
         response = await self._connection.command(
             "setTransform",
-            self._prepared_params(
-                [
-                    {
-                        "crop": transform.crop,
-                        "position": transform.position,
-                        "rotation": transform.rotation,
-                        "scale": transform.scale,
-                    }
-                ]
-            ),
+            self._prepared_params([self.marshall_transform(transform)]),
         )
         self._check_empty(response)
 
@@ -405,6 +432,26 @@ class SceneItem(SceneNode):
             "stretchToScreen", self._prepared_params()
         )
         self._check_empty(response)
+
+    @staticmethod
+    def marshall_transform(transform):
+        return {
+            "crop": None
+            if not transform.crop
+            else dict(
+                bottom=transform.crop.bottom,
+                top=transform.crop.top,
+                left=transform.crop.left,
+                right=transform.crop.right,
+            ),
+            "position": None
+            if not transform.position
+            else dict(x=transform.position.x, y=transform.position.y),
+            "rotation": transform.rotation,
+            "scale": None
+            if not transform.scale
+            else dict(x=transform.scale.x, y=transform.scale.y),
+        }
 
 
 register(SceneNode)
