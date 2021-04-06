@@ -5,7 +5,7 @@
     This code should not be used by the client, but it is shared between a
     number of SlobsService and SlobsClasses so it has been grouped together.
 """
-from .typedefs import TSceneNodeType, ITransform
+from .typedefs import TSceneNodeType, ITransform, IVec2, ICrop
 
 CLASSES = {}
 
@@ -33,10 +33,14 @@ def scenenode_factory(connection, json_dict):
 def sceneitem_factory(connection, json_dict):
     # We see inconsistency in choices of API here.
     if isinstance(json_dict["transform"]["position"], list):
-        transform_position = {"x": json_dict["transform"]["position"][0],
-                              "y": json_dict["transform"]["position"][1]}
+        transform_position = (
+            IVec2(
+                x=json_dict["transform"]["position"][0],
+                y=json_dict["transform"]["position"][1],
+            ),
+        )
     else:
-        transform_position = json_dict["transform"]["position"]
+        transform_position = IVec2(*json_dict["transform"]["position"])
     return CLASSES["SceneItem"](
         connection=connection,
         resource_id=json_dict["resourceId"],
@@ -53,12 +57,11 @@ def sceneitem_factory(connection, json_dict):
         scene_item_id=json_dict["sceneItemId"],
         stream_visible=json_dict["streamVisible"],
         transform=ITransform(
-            # Not showing full commitment here. Should make these sub-dictionaries
-            # into named tuples as well.
-            crop=json_dict["transform"]["crop"],
+            crop=ICrop(**json_dict["transform"]["crop"]),
             position=transform_position,
             rotation=json_dict["transform"]["rotation"],
-            scale=json_dict["transform"]["scale"]),
+            scale=IVec2(**json_dict["transform"]["scale"]),
+        ),
         visible=json_dict["visible"],
     )
 
@@ -128,4 +131,3 @@ def selection_factory(connection, json_dict):
         source_id=json_dict["id"],
         scene_id=json_dict["sceneId"],
     )
-
