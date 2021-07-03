@@ -1,4 +1,5 @@
 import asyncio
+from pathlib import Path
 from pyslobs import ScenesService, SourcesService, ISourceAddOptions, IVec2
 import formatters as pp
 from preservers import TestScene
@@ -13,6 +14,11 @@ async def modify_scene_nodes(conn):
         options=ISourceAddOptions(channel=None, is_temporary=False),
     )
     print("Added source", source)
+    path = Path(__file__).parent / "testpattern.jpg"
+
+    source = await ss.create_source(
+        "test pattern", "image_source", {"file": str(path)}, options=None
+    )
 
     async with TestScene(conn) as ts:
         print("Scene added.")
@@ -44,8 +50,9 @@ async def modify_scene_nodes(conn):
             )
         )
 
+        # Exercise scaling
         print("Before scaling", scene_node.transform)
-        await scene_node.set_scale(IVec2(1.5, 2.0))
+        await scene_node.set_scale(IVec2(0.5, 0.8))
         print("After scaling - proxy value", scene_node.name, scene_node.transform)
         items = await folder.get_items()
         assert len(items) == 1
@@ -58,12 +65,16 @@ async def modify_scene_nodes(conn):
         # Why does the position change? Checked the data being transmitted and it
         # appears to be a bug in StreamLabs.
 
+        print("Wait a moment for the pattern to appear.")
+        await asyncio.sleep(5)
         print(
             "Before setting",
             scene_node.locked,
             scene_node.visible,
             scene_node.stream_visible,
         )
+
+        print("Pattern should now disappear from the screen.")
         await scene_node.set_settings(
             dict(locked=True, visible=False, stream_visible=False)
         )
@@ -73,6 +84,15 @@ async def modify_scene_nodes(conn):
             scene_node.visible,
             scene_node.stream_visible,
         )
+        await asyncio.sleep(15)
+
+        print("Pattern should now reappear on screen (not in stream though).")
+        assert scene_node.visible == False
+        await scene_node.set_visibility(visible=True)
+        assert scene_node.visible == True
+
+        await asyncio.sleep(5)
+
         items = await folder.get_items()
         assert len(items) == 1
         refetched_scene_node = items[0]

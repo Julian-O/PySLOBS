@@ -425,6 +425,7 @@ class SceneItem(SceneNode):
         response = await self._connection.command(
             "setVisibility", self._prepared_params([visible])
         )
+        self._visible = visible
         self._check_empty(response)
 
     async def stretch_to_screen(self):
