@@ -16,8 +16,8 @@ sources. It includes monitoring performance.
 This doesn't include chat or getting notifications about donations, subscriptions and
 followers. You will need to look elsewhere for that.
 
-Typically, it would be accessed from same computer that is running Stream OBS, or from
-a computer on the same LAN.
+Typically, it would be accessed from same computer that is running Streamlabs OBS, or
+from a computer on the same LAN.
 
 The API is based on [WebSockets](https://en.wikipedia.org/wiki/WebSocket) so it can
 be accessed from a browser in JavaScript. (Apparently, it can also be accessed through
@@ -34,7 +34,7 @@ and more Pythonic interfaces are provided.
 This API requires Python 3.9. (If there is a good reason you need an
 earlier version of Python, please raise a GitHub issue.)
 
-StreamLabs OBS 0.27.1 has been tested.
+Streamlabs OBS 1.2.0 has been tested.
 
 ### Pythonic names and types
 
@@ -49,14 +49,14 @@ numeric constants where possible.
 Identifiers that clash with reserved words used in Python are suffixed with `_` - e.g.
 `id_()`.
 
-Date-times from notifications do not have a timezone associated with them. They  are in
+Date-times from notifications do not have a timezone associated with them. They are in
 the timezone of the host running the API. 
 
 ### Testing Progress.
 
 The API is moderately large. In this version of the Python wrapper, not every method
-offered has been tested. It is focussed on the areas the developers actively
-want to use first.
+offered has been tested. Testing has been focussed on the areas the developer actively
+wanted to use first.
 
 See `PROGRESS.md` for an idea of what is and isn't tested.
 
@@ -73,7 +73,7 @@ of Python before, please consult a tutorial. In particular:
 * After creation, remember to await the `SlobsConnection.background_processing()`
   coroutine.
 
-* To shut-down cleanly, remember to close the connection. when you are finished running your code to 
+* To shut-down cleanly, remember to close the connection. 
 
 * To avoid exceptions being swallowed, handle them in your top-level code.
 
@@ -107,10 +107,10 @@ So your main program might look like this:
 Connections should be closed when complete, so the background processing can 
 know to shut-down.
 
-#### Configuraton and Authentication
+#### Configuration and Authentication
 
-The SlobsConnection needs details about how to connect to the
-StreamLabs OBS application.
+The SlobsConnection needs details about how to connect to the Streamlabs OBS
+application.
 
 It needs to know which host is running the application, which port it is listening to,
 and the "API Token".
@@ -121,11 +121,11 @@ it is, a new token should be generated.
 
 ##### Obtaining connection details
 
-To obtain all these details, start StreamLabs OBS, open the settings page, and select
+To obtain all these details, start Streamlabs OBS, open the settings page, and select
 "Remote Control". A (blurry) QR code will be displayed. Do not show that QR code on
 your stream.
 
-If you click on the QR code, and click "Show Details" underneath it you will be given
+If you click on the QR code, and click "Show Details" underneath it, you will be given
 the following details:
 
  * API token
@@ -133,7 +133,7 @@ the following details:
  * Port: This should default to 59650. If it is a different value, your Python
     application will need to know this.
 
- * IP addresses: If your application is on a different host to StreamLabs OBS, your
+ * IP addresses: If your application is on a different host to Streamlabs OBS, your
     Python application will need to know one of the IP addresses offered.
 
 ##### Using connection details
@@ -150,7 +150,7 @@ The content of the ini file should be:
     [connection]
     domain=localhost
     port=59650
-    token=<your secret token?
+    token=<your secret token>
 
 When running the examples or exercises, if no ini file is found, it will assume defaults
 and prompt for the user to type in the API token each time.
@@ -173,14 +173,14 @@ Services can be used:
   * subscribe to events, such as when the user selects a new active scene.
   * to make some limited direct changes, such as setting an active scene by
     scene id.
-  * fetch Objects that can be manipulated more directly.
+  * fetch SlobsClass instances (see below) that can be manipulated more directly.
   
 #### Classes  
   
-In the original API they describe "Classes", which are called represented by subclasses
+In the original API they describe "Classes". These are represented by subclasses
 of `SlobsClass` in the Python API.
 
-Subclasses include:
+SlobsClass subclasses include:
 
 1. AudioSource
 1. Scene
@@ -193,7 +193,7 @@ Subclasses include:
 Instances of SlobsClass should only be constructed through Services methods and methods
 on other instances. 
 
-Objects may have properties (such as names) that can be accessed. Be careful that the
+Instances may have properties (such as names) that can be accessed. Be careful that the
 values of these properties may be out-of-date if the value was changed within the app
 or if it was changed through a different instance referencing the same SLOBS resource.
 
@@ -210,20 +210,20 @@ To subscribe, create a callback function with a signature like:
      async def on_event(key, message)
 
 (A method could also be used, in which case there should be an additional `self`
-paramater.)
+parameter.)
 
-Then call the event's subscribe() method, passing the callback function. e.g.
+Then call the event's `subscribe()` method, passing the callback function. e.g.
 
     subscription = ScenesService(conn).scene_switched.subscribe(on_event)
 
 Each time the event happens, the callback will be called. The `key` parameter
-will indicated which sort of event triggers the callback (which is useful if you
-want to reuse a call-back function for several event types) and the message is a 
-dictionary containing details of the event. (The SLOBS API is unclear about what 
+will indicate which sort of event has triggered the callback (which is useful if you
+want to reuse a call-back function for several event types). The `message` parameter
+is a dictionary containing details of the event. (The SLOBS API is unclear about what 
 fields will be present, so this may require some experimentation to find out what 
 data is available.)
 
-The result of subscribe is a `Subscription` object that supports unsubscribe.
+The result of subscribe is a `Subscription` object that supports `unsubscribe()`.
 (It can also be used as an asynchronous context manager to ensure unsubscriptions
 are not forgotten.)
 
@@ -231,7 +231,7 @@ The subscribe method also accepts a `subscribe_preferences` parameter which is a
 instance of `SubscriptionPreferences`. It indicates whether the callback should
 *also* be called when the subscription is ended due to a call to unsubscribe or
 by the connection being closed. In these events, the value of key will be set to
-special values: `UBSUBSCRIBED` and `CLOSED` as appropriate.
+special values: `UNSUBSCRIBED` and `CLOSED` as appropriate.
 
 ##### Subscribable Events by Service
 * SceneCollectionService
@@ -262,14 +262,14 @@ special values: `UBSUBSCRIBED` and `CLOSED` as appropriate.
 
 The examples folder contains many small programs to demonstrate how to use the
 API. These are not included with the package, but can be found on the GitHub 
-site. Install PySlobs, copy the raw example files to your machine, start your 
-copy of Stream Labs OBS, and run the examples (once PySlobs is installed).  
+site. Install PySLOBS, copy the raw example files to your machine, start your 
+copy of Streamlabs OBS, and run the examples (once PySLOBS is installed).  
 
 ## Special cases:
 
-* Sources have an additional field `configurable` which isn't documented.
-* Sources have a method `refresh` which raises an Internal Server Error. This has been
-  reported to StreamLabs.
+* `Sources` have an additional field `configurable` which isn't documented.
+* `Sources` have a method `refresh` which raises an Internal Server Error. This has been
+  reported to Streamlabs.
 * `SceneCollectionsService` methods sometimes raise Internal Server Errors if called 
   too rapidly.
 * `TransitionsService` methods sometimes raise Internal Server Errors if called 
