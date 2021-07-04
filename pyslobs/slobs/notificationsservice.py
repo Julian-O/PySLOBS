@@ -78,7 +78,7 @@ class NotificationsService(SlobsService):
 
     async def mark_as_read(self, id_):
         response = await self._connection.command(
-            "markAllAsRead", self._prepared_params([id_])
+            "markAsRead", self._prepared_params([id_])
         )
         self._check_empty(response)
 

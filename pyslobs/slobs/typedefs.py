@@ -4,9 +4,11 @@ from enum import Enum
 
 _FIELD_MAPS = {
     "life_time": "lifeTime",
+    "lifetime": "lifeTime",
     "play_sound": "playSound",
     "show_time": "showTime",
     "subtype": "subType",
+    "sub_type": "subType",
 }
 
 # Translate from Pythonic dictionary keys to Javascripty ones.
