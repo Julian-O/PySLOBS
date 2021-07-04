@@ -73,8 +73,7 @@ async def add_source(conn):
         "SourcesService.sourceRemoved": 1,
     }
 
-    file_source = await ss.add_file(
-            Path(__file__).parent / "testpattern.jpg")
+    file_source = await ss.add_file(Path(__file__).parent / "testpattern.jpg")
 
     print("Created source from file:")
     print(await pp.str_source_multiline(file_source, ""))

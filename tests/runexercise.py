@@ -3,6 +3,7 @@ import logging
 
 from pyslobs import SlobsConnection, config_from_ini_else_stdin
 
+
 async def closing_exercise(conn, exercise):
     await exercise(conn)
     await conn.close()

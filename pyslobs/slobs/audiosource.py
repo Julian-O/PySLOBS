@@ -36,5 +36,6 @@ class AudioSource(SlobsClass):
         )
         self._check_empty(response)
 
+
 # Dependency Injection
 register(AudioSource)

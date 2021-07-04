@@ -4,6 +4,7 @@ from pprint import pprint
 
 from pyslobs import SlobsConnection, ScenesService, config_from_ini_else_stdin
 
+
 async def list_all_scenes(conn):
     print("Available scenes:")
     ss = ScenesService(conn)

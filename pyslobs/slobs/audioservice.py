@@ -6,7 +6,6 @@ from .factories import audiosource_factory
 
 
 class AudioService(SlobsService):
-
     async def get_source(self, source_id) -> Optional[AudioSource]:
         response = await self._connection.command(
             "getSource", self._prepared_params([source_id])

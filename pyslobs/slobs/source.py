@@ -5,6 +5,7 @@ from .typedefs import TObsFormData, TSourceType, ISourceModel
 from ..apibase import SlobsClass
 from .factories import source_factory, register
 
+
 class Source(SlobsClass):
     # There is an undocumented Configurable field. Sharing here without knowing what
     # it means.
@@ -152,5 +153,6 @@ class Source(SlobsClass):
             "updateSettings", self._prepared_params([settings])
         )
         self._check_empty(response)
+
 
 register(Source)

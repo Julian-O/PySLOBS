@@ -38,6 +38,7 @@ async def record_and_stream(conn) -> None:
                 await asyncio.sleep(2)
                 await display_status(conn)
 
+
 async def exercise_streaming_ro(conn):
     await display_status(conn)
 

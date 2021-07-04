@@ -31,8 +31,10 @@ class SubscriptionPreferences:
     notify_on_unsubscribe: bool = False
     notify_on_close: bool = False
 
+
 UNSUBSCRIBED = object()
 CLOSED = object()
+
 
 class PubSubHub:
 

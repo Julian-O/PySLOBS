@@ -58,7 +58,11 @@ async def manipulate_audio_source(conn):
 
         print("Deflection result", await audio_source.set_deflection(0))
 
-        print(await pp.str_audiosource_multiline(await audioservice.get_source(audio_source.source_id),""))
+        print(
+            await pp.str_audiosource_multiline(
+                await audioservice.get_source(audio_source.source_id), ""
+            )
+        )
         assert (
             await (await audioservice.get_source(audio_source.source_id)).get_model()
         ).fader.deflection == 0

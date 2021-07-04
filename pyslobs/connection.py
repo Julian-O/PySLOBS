@@ -36,9 +36,7 @@ class _SlobsWebSocket:
 
     logger = logging.getLogger("slobsapi._SlobsWebSocket")
 
-    def __init__(
-        self, connection_config: ConnectionConfig, on_close=None
-    ):
+    def __init__(self, connection_config: ConnectionConfig, on_close=None):
 
         self.url = (
             f"ws://{connection_config.domain}:{connection_config.port}/api/websocket"
@@ -127,7 +125,7 @@ class SlobsConnection:
 
     logger = logging.getLogger("slobsapi.SlobsConnection")
 
-    def __init__(self, connection_config : Optional[ConnectionConfig] = None):
+    def __init__(self, connection_config: Optional[ConnectionConfig] = None):
 
         connection_config = connection_config or config_from_ini()
         if not connection_config:

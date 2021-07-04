@@ -17,10 +17,12 @@ async def list_notifications(conn):
         notifications = await ns.get_unread(notif_type)
         print(pp.str_notificationmodels_multiline(notifications, "  "))
 
+
 async def show_settings(conn):
     ns = NotificationsService(conn)
     settings = await ns.get_settings()
     print(pp.str_inotificationsettings(settings))
+
 
 async def show_single_notification(conn):
     # Assumes there is at least one WARNING.
@@ -43,8 +45,8 @@ async def exercise_notifications_services_ro(conn):
     await show_single_notification(conn)
     await list_notifications(conn)
 
+
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
 
     run_exercise(exercise_notifications_services_ro)
-

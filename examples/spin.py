@@ -63,7 +63,7 @@ class Spinnable:
             position=IVec2(
                 x=self.original_transform.position["x"] + offset[0],
                 y=self.original_transform.position["y"] + offset[1],
-                    ),
+            ),
             rotation=self.original_transform.rotation + angle_deg,
         )
         return result

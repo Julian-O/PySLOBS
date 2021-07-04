@@ -87,15 +87,13 @@ class Scene(SlobsClass):
 
     async def create_and_add_source(
         self, name: str, type_: TSourceType, settings: Optional[dict[Any]] = None
-    ): # -> SceneItem:
+    ):  # -> SceneItem:
         response = await self._connection.command(
             "createAndAddSource", self._prepared_params([name, type_, settings])
         )
         return sceneitem_factory(self._connection, response)
 
-    async def create_folder(
-        self, name: str
-    ): # -> SceneItem:
+    async def create_folder(self, name: str):  # -> SceneItem:
         response = await self._connection.command(
             "createFolder", self._prepared_params([name])
         )
@@ -177,9 +175,7 @@ class Scene(SlobsClass):
         return selection_factory(self._connection, response)
 
     async def get_source(self):
-        response = await self._connection.command(
-            "getSource", self._prepared_params()
-        )
+        response = await self._connection.command("getSource", self._prepared_params())
         return source_factory(self._connection, response)
 
     async def make_active(self):
@@ -191,11 +187,15 @@ class Scene(SlobsClass):
         self._check_empty(response)
 
     async def remove_folder(self, folder_id):
-        response = await self._connection.command("removeFolder", self._prepared_params([folder_id]))
+        response = await self._connection.command(
+            "removeFolder", self._prepared_params([folder_id])
+        )
         self._check_empty(response)
 
     async def remove_item(self, scene_item_id):
-        response = await self._connection.command("removeItem", self._prepared_params([scene_item_id]))
+        response = await self._connection.command(
+            "removeItem", self._prepared_params([scene_item_id])
+        )
         self._check_empty(response)
 
     async def set_name(self, new_name):

@@ -20,9 +20,7 @@ class SelectionBase:
         return response
 
     async def add(self, ids: list[str]):  # -> Selection
-        response = await self._connection.command(
-            "add", self._prepared_params([ids])
-        )
+        response = await self._connection.command("add", self._prepared_params([ids]))
         return selection_factory(self._connection, response)
 
     async def center_on_screen(self) -> None:

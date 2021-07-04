@@ -42,9 +42,7 @@ class NotificationsService(SlobsService):
         response = await self._connection.command(
             "getAll", self._prepared_params([type_.value])
         )
-        return [
-            self._inotification_model_factory(subitem) for subitem in response
-        ]
+        return [self._inotification_model_factory(subitem) for subitem in response]
 
     async def get_notification(self, id_):
         response = await self._connection.command(
@@ -56,9 +54,7 @@ class NotificationsService(SlobsService):
         response = await self._connection.command(
             "getRead", self._prepared_params([type_.value])
         )
-        return [
-            self._inotification_model_factory(subitem) for subitem in response
-        ]
+        return [self._inotification_model_factory(subitem) for subitem in response]
 
     async def get_settings(self) -> INotificationSettings:
         response = await self._connection.command(
@@ -72,9 +68,7 @@ class NotificationsService(SlobsService):
         response = await self._connection.command(
             "getUnread", self._prepared_params([type_.value])
         )
-        return [
-            self._inotification_model_factory(subitem) for subitem in response
-        ]
+        return [self._inotification_model_factory(subitem) for subitem in response]
 
     async def mark_all_as_read(self):
         response = await self._connection.command(

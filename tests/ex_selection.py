@@ -1,7 +1,8 @@
 import asyncio
 from pathlib import Path
 from pyslobs import SelectionService, ScenesService, SourcesService
-#import formatters as pp
+
+# import formatters as pp
 from preservers import TestScene
 
 
@@ -13,6 +14,7 @@ async def display_status(conn) -> None:
 
     model = await sts.get_model()
     print("Model=", model)
+
 
 async def direct_selection(conn) -> None:
     sts = SelectionService(conn)
@@ -38,7 +40,7 @@ async def direct_selection(conn) -> None:
         assert len(selected_ids) == 1
         assert first.id_ not in selected_ids
         assert middle.id_ not in selected_ids
-        assert last.id_  in selected_ids
+        assert last.id_ in selected_ids
 
         # Select them all
         await sts.select_all()
@@ -80,8 +82,10 @@ async def direct_selection(conn) -> None:
 async def exercise_selection_ro(conn):
     await display_status(conn)
 
+
 async def exercise_selection_rw(conn):
     await direct_selection(conn)
+
 
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
