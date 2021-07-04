@@ -34,7 +34,7 @@ class SceneNode(SlobsClass):
         self._scene_node_type = scene_node_type
 
     def __str__(self):
-        return f"{self.__class__.__name__}({self._resource_id}, {self._id})"
+        return f"{self.__class__.__name__}(resource_id={self._resource_id}, id_={self._id})"
 
     @property
     def id_(self):

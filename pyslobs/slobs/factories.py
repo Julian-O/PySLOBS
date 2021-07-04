@@ -41,6 +41,7 @@ def sceneitem_factory(connection, json_dict):
         )
     else:
         transform_position = IVec2(*json_dict["transform"]["position"])
+
     return CLASSES["SceneItem"](
         connection=connection,
         resource_id=json_dict["resourceId"],
@@ -124,10 +125,8 @@ def scene_factory(connection, json_dict):
 
 
 def selection_factory(connection, json_dict):
-    raise CLASSES["Selection"](
+    return CLASSES["Selection"](
         connection,
         # resource_ids are missing after a deletion.
         resource_id=json_dict.get("resourceId", None),
-        source_id=json_dict["id"],
-        scene_id=json_dict["sceneId"],
     )

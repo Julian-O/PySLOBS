@@ -21,7 +21,7 @@ class SelectionBase:
 
     async def add(self, ids: list[str]):  # -> Selection
         response = await self._connection.command(
-            "sceneId", self._prepared_params([ids])
+            "add", self._prepared_params([ids])
         )
         return selection_factory(self._connection, response)
 
@@ -110,7 +110,7 @@ class SelectionBase:
 
     async def get_last_selected(self) -> SceneNode:
         response = await self._connection.command(
-            "getLastSelectedId", self._prtepared_params()
+            "getLastSelected", self._prtepared_params()
         )
         return scenenode_factory(self._connection, response)
 
@@ -153,7 +153,7 @@ class SelectionBase:
 
     async def invert(self) -> Selection:
         response = await self._connection.command("invert", self._prepared_params())
-        return [scenenode_factory(self._connection, subitem) for subitem in response]
+        return selection_factory(self._connection, response)
 
     async def is_scene_folder(self) -> bool:
         response = await self._connection.command(
@@ -181,7 +181,7 @@ class SelectionBase:
 
     async def place_after(self, scene_node_id: str) -> None:
         response = await self._connection.command(
-            "placeBefore", self._prepared_params([scene_node_id])
+            "placeAfter", self._prepared_params([scene_node_id])
         )
         self._check_empty(response)
 
@@ -207,13 +207,13 @@ class SelectionBase:
 
     async def rotate(self, deg: int) -> None:
         response = await self._connection.command(
-            "resetTransform", self._prepared_params([deg])
+            "rotate", self._prepared_params([deg])
         )
         self._check_empty(response)
 
     async def scale(self, scale: IVec2, origin: Optional[IVec2] = None) -> None:
         response = await self._connection.command(
-            "resetTransform", self._prepared_params([scale, origin])
+            "scale", self._prepared_params([scale, origin])
         )
         self._check_empty(response)
 
@@ -227,7 +227,7 @@ class SelectionBase:
         response = await self._connection.command(
             "select", self._prepared_params([ids])
         )
-        return [selection_factory(self._connection, subitem) for subitem in response]
+        return selection_factory(self._connection, response)
 
     async def select_all(self) -> None:
         response = await self._connection.command(
