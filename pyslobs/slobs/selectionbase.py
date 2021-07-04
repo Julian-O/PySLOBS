@@ -5,6 +5,7 @@ from .typedefs import IRectangle, ISelectionModel, IVec2
 from .scenenode import SceneNode
 from .factories import (
     selection_factory,
+    scene_factory,
     sceneitemfolder_factory,
     sceneitem_factory,
     scenenode_factory,
@@ -78,7 +79,7 @@ class SelectionBase:
         else:
             return None
 
-    async def get_folders(self) -> list[str]:
+    async def get_folders(self) -> list[SceneItemFolder]:
         response = await self._connection.command(
             "getFolders", self._prepared_params([])
         )
@@ -94,7 +95,7 @@ class SelectionBase:
         response = await self._connection.command(
             "getInverted", self._prepared_params([])
         )
-        return scenenode_factory(self._connection, response)
+        return [scenenode_factory(self._connection, subitem) for subitem in response]
 
     async def get_inverted_ids(self) -> list[str]:
         response = await self._connection.command(
@@ -104,7 +105,7 @@ class SelectionBase:
 
     async def get_items(self) -> list[SceneItem]:
         response = await self._connection.command("getItems", self._prepared_params([]))
-        return sceneitem_factory(self._connection, response)
+        return [sceneitem_factory(self._connection, subitem) for subitem in response]
 
     async def get_last_selected(self) -> SceneNode:
         response = await self._connection.command(
@@ -131,9 +132,9 @@ class SelectionBase:
         )
         return [scenenode_factory(self._connection, subitem) for subitem in response]
 
-    async def get_scene(self) -> list[SceneNode]:
+    async def get_scene(self) -> Scene:
         response = await self._connection.command("getScene", self._prepared_params())
-        return scenenode_factory(self._connection, response)
+        return scene_factory(self._connection, response)
 
     async def get_size(self) -> bool:
         response = await self._connection.command("getSize", self._prepared_params())
@@ -195,7 +196,7 @@ class SelectionBase:
 
     async def reset(self) -> Selection:
         response = await self._connection.command("reset", self._prepared_params([]))
-        return selection_factory(self._connection(), response)
+        return selection_factory(self._connection, response)
 
     async def reset_transform(self) -> None:
         response = await self._connection.command(
