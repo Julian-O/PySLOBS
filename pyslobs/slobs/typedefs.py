@@ -6,10 +6,12 @@ _FIELD_MAPS = {
     "life_time": "lifeTime",
     "lifetime": "lifeTime",
     "play_sound": "playSound",
+    "recording_visible": "recordingVisible",
     "show_time": "showTime",
+    "stream_visible": "streamVisible",
     "subtype": "subType",
     "sub_type": "subType",
-}
+    }
 
 # Translate from Pythonic dictionary keys to Javascripty ones.
 # Only required for dictionaries passed to API by client.

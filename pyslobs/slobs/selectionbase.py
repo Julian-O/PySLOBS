@@ -1,7 +1,7 @@
 from __future__ import annotations  # Postponed eval of annotations. Fixed in 3.10
 from typing import Optional
 
-from .typedefs import IRectangle, ISelectionModel, IVec2
+from .typedefs import IRectangle, ISelectionModel, IVec2, _translate_dict
 from .scenenode import SceneNode
 from .factories import (
     selection_factory,
@@ -212,13 +212,13 @@ class SelectionBase:
 
     async def scale(self, scale: IVec2, origin: Optional[IVec2] = None) -> None:
         response = await self._connection.command(
-            "scale", self._prepared_params([scale, origin])
+            "scale", self._prepared_params([scale, origin] if origin else [scale])
         )
         self._check_empty(response)
 
     async def scale_with_offset(self, scale: IVec2, offset: IVec2) -> None:
         response = await self._connection.command(
-            "scaleWithOffset", self._prepared_params([scale, origin])
+            "scaleWithOffset", self._prepared_params([scale, offset])
         )
         self._check_empty(response)
 
@@ -256,6 +256,8 @@ class SelectionBase:
         self._check_empty(response)
 
     async def set_settings(self, settings: dict) -> None:
+        # Values in the settings:
+        #   transform, visible, locked, stream_visible, recording_visible
         response = await self._connection.command(
             "setSettings", self._prepared_params([settings])
         )
@@ -267,7 +269,7 @@ class SelectionBase:
         )
         self._check_empty(response)
 
-    async def set_transform(self, transform: IPartialTransform) -> None:
+    async def set_transform(self, transform: dict) -> None:
         # The definition of IPartialTransform is a dictionary that may optionally
         # contain:
         #    position (2-tuple)
@@ -275,8 +277,9 @@ class SelectionBase:
         #    crop (a dictionary that may contain top, bottom, left, right mapping to
         #           ints)
         #    rotation
+        translated_dict = _translate_dict(transform)
         response = await self._connection.command(
-            "setTransform", self._prepared_params([transform])
+            "setTransform", self._prepared_params([translated_dict])
         )
         self._check_empty(response)
 
