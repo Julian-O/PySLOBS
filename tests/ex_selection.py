@@ -10,10 +10,15 @@ async def display_status(conn) -> None:
     sts = SelectionService(conn)
     scs = ScenesService(conn)
 
-    print("Selection is in scene: ", (await scs.get_scene(await sts.scene_id())).name)
+    print(
+        "Selection is in scene: ",
+        (await scs.get_scene(await sts.scene_id())).name,
+        "(via scene_id)",
+    )
+    print("Selection is in scene: ", (await sts.get_scene()).name, "(via get_scene)")
 
     model = await sts.get_model()
-    print("Model=", model)
+    print(f"Currently there are {len(model.selected_ids)} item(s) selected.")
 
 
 async def direct_selection(conn) -> None:
@@ -57,6 +62,10 @@ async def direct_selection(conn) -> None:
         assert middle.id_ in selected_ids
         assert last.id_ not in selected_ids
 
+        # Repeat the check using is_selected.
+        assert await sts.is_selected(middle.id_)
+        assert not await sts.is_selected(last.id_)
+
         # Invert the selection.
         await sts.invert()
         selected_ids = await sts.get_ids()
@@ -71,12 +80,24 @@ async def direct_selection(conn) -> None:
         assert middle.id_ in selected_ids
         assert last.id_ in selected_ids
 
+        # Inspect via get_model
+        model = await sts.get_model()
+        assert model.last_selected_id == middle.id_
+        assert set(model.selected_ids) == set([first.id_, middle.id_, last.id_])
         # Select only one
         await sts.select([middle.id_])
         selected_ids = await sts.get_ids()
         assert first.id_ not in selected_ids
         assert middle.id_ in selected_ids
         assert last.id_ not in selected_ids
+
+        scene_items = await sts.get_items()
+        assert len(scene_items) == 1
+        assert scene_items[0].id_ == middle.id_
+
+        await sts.reset()
+        scene_items = await sts.get_items()
+        assert not scene_items
 
 
 async def exercise_selection_ro(conn):
