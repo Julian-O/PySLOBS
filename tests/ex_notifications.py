@@ -26,6 +26,25 @@ async def show_settings(conn):
     print(pp.str_inotificationsettings(settings))
 
 
+async def change_settings(conn):
+    ns = NotificationsService(conn)
+    settings_as_found = await ns.get_settings()
+    await ns.set_settings(dict(play_sound=False, enabled=False))
+    updated_settings = await ns.get_settings()
+    assert not updated_settings.play_sound
+    assert not updated_settings.enabled
+    await ns.set_settings(dict(play_sound=True))
+    updated_settings = await ns.get_settings()
+    assert updated_settings.play_sound
+    assert not updated_settings.enabled
+
+    await ns.restore_default_settings()
+    updated_settings = await ns.get_settings()
+    print("Default settings: ", pp.str_inotificationsettings(updated_settings))
+
+    await ns.set_settings(settings_as_found._asdict())
+
+
 async def show_single_notification(conn):
     # Assumes there is at least one WARNING.
     ns = NotificationsService(conn)
@@ -64,7 +83,10 @@ async def push_notification_and_mark_read(conn):
     for notification in notifications:
         print(pp.str_notificationmodel_multiline(notification, ""))
 
-    assert last_notification.message == message_text, ( last_notification.message, message_text)
+    assert last_notification.message == message_text, (
+        last_notification.message,
+        message_text,
+    )
     print(pp.str_notificationmodel_multiline(last_notification, ""))
 
     # Send elaborate message
@@ -81,7 +103,7 @@ async def push_notification_and_mark_read(conn):
         data="Any data you like.",
         play_sound=False,  # Shhh!
         show_time=False,  # Can't see what difference changing this makes.
-        lifetime=10000, # Can't see what difference changing this makes.
+        lifetime=10000,  # Can't see what difference changing this makes.
         sub_type=NotificationSubType.DROPPED.name,
         type=NotificationType.WARNING.name,
         unread=False,
@@ -134,6 +156,10 @@ async def exercise_notifications_services_ro(conn):
 
 async def exercise_notifications_services_ui(conn):
     await push_notification_and_mark_read(conn)
+
+
+async def exercise_notifications_services_rw(conn):
+    await change_settings(conn)
 
 
 if __name__ == "__main__":

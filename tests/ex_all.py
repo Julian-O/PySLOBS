@@ -1,6 +1,9 @@
 from ex_all_ui import exercise_all_ui
 from ex_audio import exercise_audioservice_ro, exercise_audioservice_rw
-from ex_notifications import exercise_notifications_services_ro
+from ex_notifications import (
+    exercise_notifications_services_ro,
+    exercise_notifications_services_rw,
+)
 from ex_performance import exercise_performanceservice_ro
 from ex_scenes import exercise_scenesservice_ro, exercise_scenesservice_rw
 from ex_scenecollections import (
@@ -32,6 +35,7 @@ async def exercise_all_rw(conn):
     await exercise_sourcesservice_rw(conn)
     await exercise_transitionservice_rw(conn)
     await exercise_scenenodes_rw(conn)
+    await exercise_notifications_services_rw(conn)
 
 
 async def exercise_all_destructive(conn):
