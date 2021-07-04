@@ -74,7 +74,7 @@ def str_notificationmodel_multiline(model, indent):
         + (f" code: {model.code}" if model.code else " no-code")
         + (f" data: {model.data}" if model.data else " no-data")
         + (" show-time" if model.show_time else "")
-        + (" sound" if model.play_sound else "muted")
+        + (" sound" if model.play_sound else " muted")
         + "\n"
     )
 

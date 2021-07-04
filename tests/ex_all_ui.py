@@ -7,6 +7,7 @@ import asyncio
 
 from pyslobs import NotificationsService, SourcesService
 
+from ex_notifications import exercise_notifications_services_ui
 
 async def show_notification_dialog(conn, delay):
     ns = NotificationsService(conn)
@@ -44,9 +45,10 @@ async def exercise_all_ui(conn, delay=0):
     await show_add_source_dialog(conn, delay)
     await show_add_showcase_dialog(conn, delay)
     await show_source_properties_dialog(conn, delay=0)
+    await exercise_notifications_services_ui(conn)
 
 
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
 
-    run_exercise(exercise_all_ui, delay=5)
+    run_exercise(exercise_all_ui)
