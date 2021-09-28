@@ -3,8 +3,9 @@ PySLOBS: A Python Wrapper for the StreamLabs OBS API
 
 ## About the API
 
-Streamlabs OBS (SLOBS) is a live streaming software that integrates Open Broadcaster 
-Software with additional features.
+[Streamlabs OBS](https://www.streamlabs.com) (SLOBS) is a live streaming application 
+that integrates [Open Broadcaster Software](https://obsproject.com) with additional 
+features.
 
 It offers the 
 [Streamlabs OBS API](https://github.com/stream-labs/streamlabs-obs-api-docs) to allow
@@ -34,11 +35,12 @@ and more Pythonic interfaces are provided.
 This API requires Python 3.9. (If there is a good reason you need an
 earlier version of Python, please raise a GitHub issue.)
 
-Streamlabs OBS 1.2.0 has been tested.
+Streamlabs OBS versions from 1.2.0-1.4.0 have been tested.
 
 ### Pythonic names and types
 
-The Python interface is designed to allow you to write PEP8-compliant Python code.
+The Python interface is designed to allow you to write 
+[PEP8-compliant](https://www.python.org/dev/peps/pep-0008/) Python code.
 
 Camel-case items in the original API are represented in their preferred PEP8 form - 
 i.e. underscores between words to avoid ambiguity and capitalised constants.
