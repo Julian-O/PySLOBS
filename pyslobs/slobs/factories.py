@@ -31,7 +31,8 @@ def scenenode_factory(connection, json_dict):
 
 
 def sceneitem_factory(connection, json_dict):
-    # We see inconsistency in choices of API here.
+    # We see an inconsistency in the API here.
+    # Sometimes the position is a list [x, y] and sometimes a dict(x=_, y=_)
     if isinstance(json_dict["transform"]["position"], list):
         transform_position = (
             IVec2(
@@ -40,7 +41,7 @@ def sceneitem_factory(connection, json_dict):
             ),
         )
     else:
-        transform_position = IVec2(*json_dict["transform"]["position"])
+        transform_position = IVec2(**json_dict["transform"]["position"])
 
     return CLASSES["SceneItem"](
         connection=connection,

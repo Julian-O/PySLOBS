@@ -27,7 +27,12 @@ async def modify_scene_nodes(conn):
         folder = await ts.create_folder("test_folder")
         print("Added folder")
         scene_node = await ts.add_source(source.source_id)
-        print("Created scene_node from source")
+        print("Created scene_node from source. Here is the default transform:")
+        print(scene_node.transform)
+
+        # Make sure that the position is an integer (see Issue #7 in GitHub)
+        assert scene_node.transform.position.x == 0
+
         # Add node to folder.
         await folder.add(scene_node.scene_item_id)
 
