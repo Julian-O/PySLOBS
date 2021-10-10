@@ -3,6 +3,7 @@ from ..apibase import SlobsClass
 from .scenenode import (
     SceneNode,
 )
+from .source import Source
 from .factories import (
     scenenode_factory,
     sceneitem_factory,
