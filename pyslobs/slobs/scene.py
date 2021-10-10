@@ -149,11 +149,14 @@ class Scene(SlobsClass):
         )
         return scenenode_factory(self._connection, source)
 
-    async def get_node_by_name(self, name: str):  # -> Source
+    async def get_node_by_name(self, name: str) -> Optional[Source]:
         response = await self._connection.command(
             "getNodeByName", self._prepared_params([name])
         )
-        return scenenode_factory(self._connection, source)
+        if not response:
+            return None
+        else:
+            return scenenode_factory(self._connection, response)
 
     async def get_nodes(self):  # -> Source
         response = await self._connection.command("getNodes", self._prepared_params())
