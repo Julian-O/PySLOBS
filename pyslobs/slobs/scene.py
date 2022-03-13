@@ -112,11 +112,11 @@ class Scene(SlobsClass):
             sceneitemfolder_factory(self._connection, subitem) for subitem in response
         ]
 
-    async def get_item(self, scene_folder_id: str):  # -> SceneItem:
+    async def get_item(self, scene_folder_id: str):  # -> Optional[SceneItem]:
         response = await self._connection.command(
             "getItem", self._prepared_params([scene_folder_id])
         )
-        return sceneitem_factory(self._connection, response)
+        return sceneitem_factory(self._connection, response) if response else None
 
     async def get_items(self):  # -> list[SceneItem]:
         response = await self._connection.command("getItems", self._prepared_params())
