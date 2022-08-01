@@ -40,7 +40,7 @@ class SceneTime:
         self._current_scene_name = (await self._ss.active_scene()).name
         self._started = True
         print("The current scene is:", self._current_scene_name)
-        print("Change scenes in StreamLabs OBS to see this example in action.")
+        print("Change scenes in StreamLabs Desktop to see this example in action.")
 
     def _dump_stats(self):
         print("Current Scene:", self._current_scene_name)

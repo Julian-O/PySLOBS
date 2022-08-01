@@ -67,7 +67,7 @@ async def push_notification_and_mark_read(conn):
     message_text = f"Pushed notification from test code {time.asctime()}"
 
     print(
-        "Expect beep and message text to display at bottom of StreamLabs OBS"
+        "Expect beep and message text to display at bottom of StreamLabs Desktop"
         " with an (i)"
     )
 

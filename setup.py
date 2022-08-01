@@ -8,7 +8,7 @@ setuptools.setup(
     version="1.2.4",
     author="Julian-O",
     # author_email="",
-    description="Python wrapper to StreamLabs OBS API",
+    description="Python wrapper to StreamLabs Desktop API",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/Julian-O/pyslobs",

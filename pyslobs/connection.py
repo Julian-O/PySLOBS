@@ -46,7 +46,7 @@ class _SlobsWebSocket:
         try:
             self.socket = create_connection(self.url, timeout=20)
         except ConnectionRefusedError as e:
-            raise ProtocolError("Couldn't connect. Is StreamLabs OBS running? %s" % e)
+            raise ProtocolError("Couldn't connect. Is StreamLabs Desktop running? %s" % e)
         self._authenticate()
 
     def is_alive(self) -> bool:

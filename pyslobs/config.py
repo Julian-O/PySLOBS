@@ -9,7 +9,7 @@ DEFAULT_PORT = 59650
 
 @dataclass
 class ConnectionConfig:
-    """Information required to connect to SL OBS."""
+    """Information required to connect to StreamLabs Desktop."""
 
     token: str
     domain: str = DEFAULT_DOMAIN
