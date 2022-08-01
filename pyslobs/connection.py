@@ -187,12 +187,14 @@ class SlobsConnection:
                             # This is a response to an explicit request.
                             key = message["id"]
                             await self.hub.publish(key=key, message=message)
-                        else:
-                            # This is a response to an subscription.
+                        elif "result" in message:
+                            # This is a response to a subscription.
                             key = message["result"]["resourceId"]
                             data = message["result"].get("data", None)
-
                             await self.hub.publish(key=key, message=data)
+                        else:
+                            raise ProtocolError(
+                                "Message from StreamLabs Desktop should include `id` or `result`: %r", message)
                 except AttributeError:
                     if not self.hub:
                         # Connection was closed mid-receive.
