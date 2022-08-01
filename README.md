@@ -1,14 +1,14 @@
-PySLOBS: A Python Wrapper for the StreamLabs OBS API
+PySLOBS: A Python Wrapper for the StreamLabs Desktop API
 -------------------------------------
 
 ## About the API
 
-[Streamlabs OBS](https://www.streamlabs.com) (SLOBS) is a live streaming application 
-that integrates [Open Broadcaster Software](https://obsproject.com) with additional 
+[Streamlabs Desktop](https://www.streamlabs.com) (formerly StreamLabs OBS) is a live streaming application 
+based on a fork of [Open Broadcaster Software](https://obsproject.com) with additional 
 features.
 
 It offers the 
-[Streamlabs OBS API](https://github.com/stream-labs/streamlabs-obs-api-docs) to allow
+[Streamlabs Desktop API](https://github.com/stream-labs/streamlabs-desktop-api-docs) to allow
 third-party applications to interact with the application while it is running.
 
 This includes selecting, editing and monitoring scenes, video sources and audio 
@@ -17,7 +17,7 @@ sources. It includes monitoring performance.
 This doesn't include chat or getting notifications about donations, subscriptions and
 followers. You will need to look elsewhere for that.
 
-Typically, it would be accessed from same computer that is running Streamlabs OBS, or
+Typically, it would be accessed from same computer that is running Streamlabs Desktop, or
 from a computer on the same LAN.
 
 The API is based on [WebSockets](https://en.wikipedia.org/wiki/WebSocket) so it can
@@ -27,7 +27,7 @@ a named pipe.)
 ##  About the Python Wrapper
 
 Rather than accessing it from Javascript, this Python wrapper allows access to
-Streamlabs OBS from a Python application. The details about websockets are hidden
+Streamlabs Desktop from a Python application. The details about websockets are hidden
 and more Pythonic interfaces are provided.
 
 ### Versions
@@ -35,7 +35,7 @@ and more Pythonic interfaces are provided.
 This API requires Python 3.9. (If there is a good reason you need an
 earlier version of Python, please raise a GitHub issue.)
 
-Streamlabs OBS versions from 1.2.0-1.5.2 have been tested.
+Streamlabs Desktop versions from 1.2.0-1.5.2 have been tested.
 
 ### Pythonic names and types
 
@@ -111,7 +111,7 @@ know to shut-down.
 
 #### Configuration and Authentication
 
-The SlobsConnection needs details about how to connect to the Streamlabs OBS
+The SlobsConnection needs details about how to connect to the Streamlabs Desktop
 application.
 
 It needs to know which host is running the application, which port it is listening to,
@@ -123,7 +123,7 @@ it is, a new token should be generated.
 
 ##### Obtaining connection details
 
-To obtain all these details, start Streamlabs OBS, open the settings page, and select
+To obtain all these details, start Streamlabs Desktop, open the settings page, and select
 "Remote Control". A (blurry) QR code will be displayed. Do not show that QR code on
 your stream.
 
@@ -135,7 +135,7 @@ the following details:
  * Port: This should default to 59650. If it is a different value, your Python
     application will need to know this.
 
- * IP addresses: If your application is on a different host to Streamlabs OBS, your
+ * IP addresses: If your application is on a different host to Streamlabs Desktop, your
     Python application will need to know one of the IP addresses offered.
 
 ##### Using connection details
@@ -197,7 +197,7 @@ on other instances.
 
 Instances may have properties (such as names) that can be accessed. Be careful that the
 values of these properties may be out-of-date if the value was changed within the app
-or if it was changed through a different instance referencing the same SLOBS resource.
+or if it was changed through a different instance referencing the same StreamLabs Desktop resource.
 
 Objects can be used to fetch other Objects or `namedtuple`s describing other records 
 in the API.
@@ -221,7 +221,7 @@ Then call the event's `subscribe()` method, passing the callback function. e.g.
 Each time the event happens, the callback will be called. The `key` parameter
 will indicate which sort of event has triggered the callback (which is useful if you
 want to reuse a call-back function for several event types). The `message` parameter
-is a dictionary containing details of the event. (The SLOBS API is unclear about what 
+is a dictionary containing details of the event. (The StreamLabs Desktop API is unclear about what 
 fields will be present, so this may require some experimentation to find out what 
 data is available.)
 
@@ -265,7 +265,7 @@ special values: `UNSUBSCRIBED` and `CLOSED` as appropriate.
 The examples folder contains many small programs to demonstrate how to use the
 API. These are not included with the package, but can be found on the GitHub 
 site. Install PySLOBS, copy the raw example files to your machine, start your 
-copy of Streamlabs OBS, and run the examples (once PySLOBS is installed).  
+copy of Streamlabs Desktop, and run the examples (once PySLOBS is installed).  
 
 ## Special cases:
 
