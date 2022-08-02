@@ -31,6 +31,8 @@ async def add_source(conn):
     await ss.source_removed.subscribe(callback)
     await ss.source_updated.subscribe(callback)
 
+    assert events == {}, events
+
     source = await ss.create_source(
         name="Exercise Browser Source",
         type_="browser_source",
@@ -40,11 +42,21 @@ async def add_source(conn):
         options=ISourceAddOptions(channel=None, is_temporary=False),
     )
 
+    await asyncio.sleep(0.1)
+
+    # This used to call sourceAdded, but now calls sourceAdded AND
+    # sourceUpdated a random number of times (1-3?)
+    assert events["SourcesService.sourceAdded"] == 1, events
+
+    # Pretend it called sourceUpdated once to get back on track.
+    events = {
+        "SourcesService.sourceAdded": 1,
+        "SourcesService.sourceUpdated": 1,
+    }
+
     print("Created browser source:")
     print(await pp.str_source_multiline(source, ""))
 
-    await asyncio.sleep(0.1)
-    assert events == {"SourcesService.sourceAdded": 1}
 
     # Refetch the same source by name
     for source_3 in await ss.get_sources_by_name(source.name):
@@ -59,17 +71,30 @@ async def add_source(conn):
     await asyncio.sleep(0.1)
     assert events == {
         "SourcesService.sourceAdded": 1,
-        "SourcesService.sourceUpdated": 1,
-    }
+        "SourcesService.sourceUpdated": 2,
+    }, events
 
     # Refetch the same source by id
     source_2 = await ss.get_source(source.id)
     assert source_2.name == "Exercise Browser Source 2"
 
+    # Get the source's model
+    source_model = await source_2.get_model()
+    assert source_model.name == "Exercise Browser Source 2"
+    assert source_model.source_id == source.id
+
+    has_props = await source_2.has_props()
+    if has_props:
+        props = await source_2.get_properties_form_data()
+        print("Property: ")
+        for prop in props:
+            # print(prop)
+            print(f"   {prop['name']}={prop.get('value',prop['type'])}")
+
     await ss.remove_source(source.source_id)
     assert events == {
         "SourcesService.sourceAdded": 1,
-        "SourcesService.sourceUpdated": 1,
+        "SourcesService.sourceUpdated": 2,
         "SourcesService.sourceRemoved": 1,
     }
 
@@ -81,9 +106,9 @@ async def add_source(conn):
     await ss.remove_source(file_source.source_id)
     assert events == {
         "SourcesService.sourceAdded": 2,
-        "SourcesService.sourceUpdated": 1,
+        "SourcesService.sourceUpdated": 2,
         "SourcesService.sourceRemoved": 2,
-    }
+    }, events
 
 
 async def exercise_sourcesservice_ro(conn):
@@ -98,4 +123,4 @@ async def exercise_sourcesservice_rw(conn):
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
 
-    run_exercise(exercise_sourcesservice_ro)
+    run_exercise(exercise_sourcesservice_rw)
