@@ -32,10 +32,11 @@ and more Pythonic interfaces are provided.
 
 ### Versions
 
-This API requires Python 3.9. (If there is a good reason you need an
-earlier version of Python, please raise a GitHub issue.)
+This API requires Python 3.9 or later. It is tested on Python 3.10.
+(If there is a good reason you need an earlier version of Python,
+please raise a GitHub issue.)
 
-Streamlabs Desktop versions from 1.2.0-1.5.2 have been tested.
+Streamlabs Desktop versions from 1.2.0-1.10.0 have been tested.
 
 ### Pythonic names and types
 
