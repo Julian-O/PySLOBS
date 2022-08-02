@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="PySLOBS",
-    version="1.2.4",
+    version="1.2.5",
     author="Julian-O",
     # author_email="",
     description="Python wrapper to StreamLabs Desktop API",
