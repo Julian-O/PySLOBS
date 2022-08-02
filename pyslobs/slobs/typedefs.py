@@ -31,6 +31,7 @@ class NotificationSubType(Enum):
     DROPPED = "DROPPED"
     LAGGED = "LAGGED"
     SKIPPED = "SKIPPED"
+    NEWS = "NEWS"  # Undocumented, but found during testing.
 
 
 INotificationModel = namedtuple(
