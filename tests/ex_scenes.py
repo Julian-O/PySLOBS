@@ -30,7 +30,7 @@ async def show_add_delete_scene(conn):
         await ts.make_active()
         print("Scene made active (via scene).")
         await asyncio.sleep(2)
-    print("Scene deleted, old scene made active (via sceneservice")
+    print("Scene deleted, old scene made active (via sceneservice)")
 
 
 async def exercise_scenesservice_ro(conn):
