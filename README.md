@@ -277,3 +277,5 @@ copy of Streamlabs Desktop, and run the examples (once PySLOBS is installed).
   too rapidly.
 * `TransitionsService` methods sometimes raise Internal Server Errors if called 
   too rapidly.
+* Notifications subtype may be `NEWS`, which is not mentioned in the documentation.
+* When a source is added, the `source_updated` callback may also be triggered an arbitrary number of times.
