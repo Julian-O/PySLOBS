@@ -7,10 +7,10 @@ import logging
 import math
 
 from pyslobs import (
-    SlobsConnection,
-    ScenesService,
     ITransform,
     IVec2,
+    ScenesService,
+    SlobsConnection,
     config_from_ini_else_stdin,
 )
 
@@ -39,8 +39,8 @@ class Spinnable:
         self.original_transform = transform
         self.original_size = size
         self.center = (
-            int(size[0] * transform.scale["x"] / 2),
-            int(size[1] * transform.scale["y"] / 2),
+            int(size[0] * transform.scale.x / 2),
+            int(size[1] * transform.scale.y / 2),
         )
         self.hypotenuse_len = math.sqrt(self.center[0] ** 2 + self.center[1] ** 2)
         self.original_center_angle_rad = math.atan(self.center[1] / self.center[0])
@@ -61,8 +61,8 @@ class Spinnable:
             crop=self.original_transform.crop,
             scale=self.original_transform.scale,
             position=IVec2(
-                x=self.original_transform.position["x"] + offset[0],
-                y=self.original_transform.position["y"] + offset[1],
+                x=self.original_transform.position.x + offset[0],
+                y=self.original_transform.position.y + offset[1],
             ),
             rotation=self.original_transform.rotation + angle_deg,
         )
