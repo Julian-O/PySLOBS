@@ -48,7 +48,6 @@ async def add_source(conn):
     # AND sourceUpdated a random number of times (1-3?), including changing
     # the size from 0.
     assert events["SourcesService.sourceAdded"] == 1, events
-
     events = {}
 
     print("Created browser source:")
@@ -61,6 +60,8 @@ async def add_source(conn):
             break
     else:
         assert False, "Search by name failed"
+
+    assert events == {}, events
 
     await source.set_name("Exercise Browser Source 2")
 
@@ -109,10 +110,8 @@ async def add_source(conn):
     await asyncio.sleep(0.1)
     print("File_source removed.")
 
-    assert events == {
-        "SourcesService.sourceAdded": 1,
-        "SourcesService.sourceRemoved": 1,
-    }, events
+    assert events["SourcesService.sourceAdded"] == 1, events
+    assert events["SourcesService.sourceRemoved"] == 1, events
 
 
 async def exercise_sourcesservice_ro(conn):
