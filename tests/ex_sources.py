@@ -31,7 +31,7 @@ async def add_source(conn):
     await ss.source_removed.subscribe(callback)
     await ss.source_updated.subscribe(callback)
 
-    assert events == {}, events
+    events = {}
 
     source = await ss.create_source(
         name="Exercise Browser Source",
@@ -44,19 +44,15 @@ async def add_source(conn):
 
     await asyncio.sleep(0.1)
 
-    # This used to call sourceAdded, but now calls sourceAdded AND
-    # sourceUpdated a random number of times (1-3?)
+    # This used to call sourceAdded once, but now calls sourceAdded once
+    # AND sourceUpdated a random number of times (1-3?), including changing
+    # the size from 0.
     assert events["SourcesService.sourceAdded"] == 1, events
 
-    # Pretend it called sourceUpdated once to get back on track.
-    events = {
-        "SourcesService.sourceAdded": 1,
-        "SourcesService.sourceUpdated": 1,
-    }
+    events = {}
 
     print("Created browser source:")
     print(await pp.str_source_multiline(source, ""))
-
 
     # Refetch the same source by name
     for source_3 in await ss.get_sources_by_name(source.name):
@@ -69,10 +65,13 @@ async def add_source(conn):
     await source.set_name("Exercise Browser Source 2")
 
     await asyncio.sleep(0.1)
+
+    print("Source name changed.")
     assert events == {
-        "SourcesService.sourceAdded": 1,
-        "SourcesService.sourceUpdated": 2,
+        "SourcesService.sourceUpdated": 1,
     }, events
+
+    events = {}
 
     # Refetch the same source by id
     source_2 = await ss.get_source(source.id)
@@ -92,11 +91,14 @@ async def add_source(conn):
             print(f"   {prop['name']}={prop.get('value',prop['type'])}")
 
     await ss.remove_source(source.source_id)
+
+    await asyncio.sleep(0.1)
+
     assert events == {
-        "SourcesService.sourceAdded": 1,
-        "SourcesService.sourceUpdated": 2,
         "SourcesService.sourceRemoved": 1,
     }
+
+    events = {}
 
     file_source = await ss.add_file(Path(__file__).parent / "testpattern.jpg")
 
@@ -104,10 +106,12 @@ async def add_source(conn):
     print(await pp.str_source_multiline(file_source, ""))
 
     await ss.remove_source(file_source.source_id)
+    await asyncio.sleep(0.1)
+    print("File_source removed.")
+
     assert events == {
-        "SourcesService.sourceAdded": 2,
-        "SourcesService.sourceUpdated": 2,
-        "SourcesService.sourceRemoved": 2,
+        "SourcesService.sourceAdded": 1,
+        "SourcesService.sourceRemoved": 1,
     }, events
 
 
