@@ -75,10 +75,16 @@ class _SlobsWebSocket:
             except WebSocketTimeoutException:
                 self.logger.debug("Retrying after timeout.")
             except OSError as e:
-                self.logger.warning(
-                    "OSError received. Probably socket was closed. Retrying: %s", e
-                )
-                time.sleep(1)  # To prevent busy-loop
+                if self.socket:
+                    self.logger.warning(
+                        "OSError received. Retrying: %s", e
+                    )
+                    time.sleep(1)  # To prevent busy-loop
+                else:
+                    self.logger.info(
+                        "Socket closed. Shutting down", e
+                    )
+
         self.close()
         return None
 
@@ -273,8 +279,7 @@ class SlobsConnection:
         except Exception:
             self.logger.exception("_command_accept_result_of_promise has failed!")
 
-    @staticmethod
-    async def _command_accept_event_as_response(_, response, queue) -> None:
+    async def _command_accept_event_as_response(self, _, response, queue) -> None:
         try:
             await queue.put(response)
         except Exception:
