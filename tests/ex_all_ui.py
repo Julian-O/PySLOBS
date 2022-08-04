@@ -8,6 +8,8 @@ import asyncio
 from pyslobs import NotificationsService, SourcesService
 
 from ex_notifications import exercise_notifications_services_ui
+import formatters as pp
+
 
 async def show_notification_dialog(conn, delay):
     ns = NotificationsService(conn)
@@ -36,15 +38,16 @@ async def show_source_properties_dialog(conn, delay):
     first_source = sources[0]
     first_source_id = first_source.source_id
     print("Please cancel the 'properties' dialogue for:")
-    # TODO: When str_source_multiline is available, print it here.
+    print(await pp.str_source_multiline(first_source, ""))
     await ss.show_source_properties(first_source_id)
+    await asyncio.sleep(delay)
 
 
-async def exercise_all_ui(conn, delay=0):
+async def exercise_all_ui(conn, delay=3):
     await show_notification_dialog(conn, delay)
     await show_add_source_dialog(conn, delay)
     await show_add_showcase_dialog(conn, delay)
-    await show_source_properties_dialog(conn, delay=0)
+    await show_source_properties_dialog(conn, delay)
     await exercise_notifications_services_ui(conn)
 
 
