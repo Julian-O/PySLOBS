@@ -86,7 +86,7 @@ async def scene_time(conn):
     except Exception:
         logging.exception("Unexpected exception")
     finally:
-        await conn.close()
+        conn.close()
 
 
 async def main():

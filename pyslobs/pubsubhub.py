@@ -51,6 +51,8 @@ class PubSubHub:
         self._undelivered_messages: dict[str, list[any]] = dict()
         # Map from key -> list of messages
 
+        self._background_tasks = set()  # Prevent tasks from being garbage-collected.
+
     async def subscribe(
         self,
         key: Any,
@@ -74,7 +76,10 @@ class PubSubHub:
                 "Backlog of messages being cleared: %s", self._undelivered_messages[key]
             )
             for message in self._undelivered_messages[key]:
-                asyncio.ensure_future(callback_coroutine(key, message))
+                task = asyncio.ensure_future(callback_coroutine(key, message))
+                # Prevent garbage collection before being done.
+                self._background_tasks.add(task)
+                task.add_done_callback(self._background_tasks.discard)
 
             del self._undelivered_messages[key]
 
@@ -86,7 +91,10 @@ class PubSubHub:
                 if not self._subscribers_by_key[key]:
                     del self._subscribers_by_key[key]
                 if prefs.notify_on_unsubscribe:
-                    asyncio.ensure_future(callback_coroutine(key, UNSUBSCRIBED))
+                    task = asyncio.ensure_future(callback_coroutine(key, UNSUBSCRIBED))
+                    # Prevent garbage collection before being done.
+                    self._background_tasks.add(task)
+                    task.add_done_callback(self._background_tasks.discard)
 
     def has_subscribers(self, key):
         return key in self._subscribers_by_key
@@ -113,7 +121,10 @@ class PubSubHub:
                 asyncio.iscoroutinefunction(coroutine) for coroutine in coroutines
             )
             for coroutine in coroutines:
-                asyncio.ensure_future(coroutine(key, message))
+                task = asyncio.ensure_future(coroutine(key, message))
+                # Prevent garbage collection before being done.
+                self._background_tasks.add(task)
+                task.add_done_callback(self._background_tasks.discard)
 
     async def close(self):
         subscribers_to_notify = [
@@ -123,4 +134,7 @@ class PubSubHub:
             if prefs.notify_on_close
         ]
         for coroutine in subscribers_to_notify:
-            asyncio.ensure_future(coroutine(CLOSED, CLOSED))
+            task = asyncio.ensure_future(coroutine(CLOSED, CLOSED))
+            # Prevent garbage collection before being done.
+            self._background_tasks.add(task)
+            task.add_done_callback(self._background_tasks.discard)

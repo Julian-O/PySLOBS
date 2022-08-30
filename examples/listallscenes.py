@@ -1,7 +1,7 @@
-import asyncio
 import logging
-from pprint import pprint
+logging.basicConfig(level=logging.WARNING)
 
+import asyncio
 from pyslobs import SlobsConnection, ScenesService, config_from_ini_else_stdin
 
 
@@ -11,7 +11,7 @@ async def list_all_scenes(conn):
     scenes = await ss.get_scenes()
     for scene in scenes:
         print(" - ", scene.name)
-    await conn.close()
+    conn.close()
 
 
 async def main():
@@ -19,5 +19,4 @@ async def main():
     await asyncio.gather(conn.background_processing(), list_all_scenes(conn))
 
 
-logging.basicConfig(level=logging.INFO)
 asyncio.run(main())

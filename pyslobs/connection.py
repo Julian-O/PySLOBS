@@ -46,7 +46,9 @@ class _SlobsWebSocket:
         try:
             self.socket = create_connection(self.url, timeout=20)
         except ConnectionRefusedError as e:
-            raise ProtocolError("Couldn't connect. Is StreamLabs Desktop running? %s" % e)
+            raise ProtocolError(
+                "Couldn't connect. Is StreamLabs Desktop running? %s" % e
+            )
         self._authenticate()
 
     def is_alive(self) -> bool:
@@ -76,14 +78,10 @@ class _SlobsWebSocket:
                 self.logger.debug("Retrying after timeout.")
             except OSError as e:
                 if self.socket:
-                    self.logger.warning(
-                        "OSError received. Retrying: %s", e
-                    )
+                    self.logger.warning("OSError received. Retrying: %s", e)
                     time.sleep(1)  # To prevent busy-loop
                 else:
-                    self.logger.info(
-                        "Socket closed. Shutting down", e
-                    )
+                    self.logger.debug("Socket closed. Shutting down", e)
 
         self.close()
         return None
@@ -127,6 +125,22 @@ class SlobsConnection:
         Actively receiving responses
         Some sort of quit.
         Handling the transition from sync to async.
+
+    Note: client must run the background_processing co-routine
+
+    Shutdown behaviour:
+        background_processing will clean-up and quit if:
+            - the socket is closed (including by remote end)
+            - an unrecoverable message is received from the remote end
+            - an unexpected exception is caught
+        The exact reason is logged.
+
+        The close() method will close the socket, triggering
+        background_processing to clean up.
+
+        Accessing the methods after clean-up will result in a ProtocolError
+        exception.
+
     """
 
     logger = logging.getLogger("slobsapi.SlobsConnection")
@@ -149,7 +163,8 @@ class SlobsConnection:
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
-        await self.close()
+        self.logger.debug("SlobsConnection closing; out of scope.")
+        self.close()
 
     def is_alive(self):
         return bool(self.websocket) and self.websocket.is_alive()
@@ -160,6 +175,11 @@ class SlobsConnection:
         coroutines) and wait for it to be sent.
         Returns the message_id used.
         """
+        if not self.is_alive():
+            raise ProtocolError(
+                # Unexpected? Check the debug log for what triggered the closure.
+                "SlobsConnection is closed."
+            )
         message_id = _message_id_factory.next()
         loop = asyncio.get_running_loop()
         await loop.run_in_executor(
@@ -200,17 +220,25 @@ class SlobsConnection:
                             await self.hub.publish(key=key, message=data)
                         else:
                             raise ProtocolError(
-                                "Message from StreamLabs Desktop should include `id` or `result`: %r", message)
+                                "Message from StreamLabs Desktop should "
+                                "include `id` or `result`: %r",
+                                message,
+                            )
                 except AttributeError:
                     if not self.hub:
                         # Connection was closed mid-receive.
                         break
                     raise
+            self.logger.debug(
+                "_receive_and_dispatch terminating because socket was closed"
+            )
         except Exception:
             self.logger.exception("_receive_and_dispatch failing.")
             raise
+        finally:
+            await self._clean_up()
 
-        await self.close()
+        self.logger.debug("_receive_and_dispatch terminated cleanly.")
 
     # Give a nicer name for clients that don't need the details.
     background_processing = _receive_and_dispatch
@@ -302,13 +330,15 @@ class SlobsConnection:
         # Command may be unnecessary if there is already a subscription, but we don't
         # know the resource_id here until we ask.
         response = await self.command(method, params)
-        if not "_type" in response or response["_type"] != "SUBSCRIPTION":
+        if response.get("_type") != "SUBSCRIPTION":
             raise ProtocolError("Badly formed subscription response: %s" % response)
         try:
             resource_id = response["resourceId"]
         except KeyError:
             raise ProtocolError("Badly formed subscription response: %s" % response)
 
+        if not self.hub:
+            raise ProtocolError("Connection already closed.")
         await self.hub.subscribe(
             key=resource_id,
             callback_coroutine=callback_coroutine,
@@ -323,6 +353,8 @@ class SlobsConnection:
         Also, unhook callback_coroutine from hub.
         """
 
+        if not self.hub:
+            raise ProtocolError("Connection already closed.")
         await self.hub.unsubscribe(
             key=resource_id, callback_coroutine=callback_coroutine
         )
@@ -332,8 +364,7 @@ class SlobsConnection:
             if not response:
                 raise ProtocolError("Unsubscribe failed.")
 
-    async def close(self):
-        self.logger.debug("Request to close connection.")
+    async def _clean_up(self):
         if self.websocket:
             socket_to_close = self.websocket
             self.websocket = None  # So we don't recurse.
@@ -342,6 +373,11 @@ class SlobsConnection:
         if self.hub:
             await self.hub.close()
             self.hub = None
+
+    def close(self):
+        self.logger.debug("Request to close SlobsConnection.")
+        self.websocket.close()
+        # This will trigger the _receive_and_dispatch thread to clean up.
 
 
 class _MessageIdFactory:
