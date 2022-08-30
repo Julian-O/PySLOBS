@@ -102,7 +102,7 @@ class _SlobsWebSocket:
         )
         response = self.receive_message()
 
-        if response["id"] != message_id:
+        if response.get("id") != message_id:
             raise ProtocolError("Response id mismatch: %s" % response)
         if "result" not in response or response["result"] is not True:
             raise AuthenticationFailure("%s" % response)
@@ -209,7 +209,7 @@ class SlobsConnection:
                     message = await self._receive_message()
 
                     if message:
-                        if "id" in message and message["id"] is not None:
+                        if message.get("id") is not None:
                             # This is a response to an explicit request.
                             key = message["id"]
                             await self.hub.publish(key=key, message=message)

@@ -116,7 +116,7 @@ def scene_factory(connection, json_dict):
         source_id=json_dict["id"],
         # Names are sometimes missing. Fill in an empty name.
         name=json_dict.get("name", ""),
-        id=json_dict["id"],
+        id_=json_dict["id"],
         nodes=[
             # Having trouble with these nodes not being gettable. Not sure why.
             scenenode_factory(connection, node)

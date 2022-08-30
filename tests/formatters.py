@@ -62,7 +62,7 @@ def str_notificationmodel_multiline(model, indent):
     return (
         indent
         + "+- Notification"
-        + f"({model.id}):"
+        + f"({model.id_}):"
         + (" " + model.type.name + "/" + model.subtype.name)
         + (" " + model.message)
         + ("\n" + indent + "|    ")
@@ -129,7 +129,7 @@ async def str_scene_multiline(
         + (" " + repr(scene.name))
         + ("\n" + indent + "|    ")
         + ("Source id: " + scene.source_id)
-        + (" Id: " + scene.id)
+        + (" Id: " + scene.id_)
         + nodes
     )
 

@@ -53,7 +53,7 @@ async def show_single_notification(conn):
     if not notifications:
         print(f"Unable to find a {notif_type.name} notification to display.")
     else:
-        first_notification_id = notifications[0].id
+        first_notification_id = notifications[0].id_
         # Fetch it again
         notification = await ns.get_notification(first_notification_id)
         print(f"Single Notification:")
@@ -130,7 +130,7 @@ async def push_notification_and_mark_read(conn):
 
     # Apply the action (which is gibberish text)
     # See no response. Not sure what is supposed to happen here.
-    await ns.apply_action(last_notification.id)
+    await ns.apply_action(last_notification.id_)
 
     notify_info = dict(message=message_text, play_sound=False)
     sent_notification_details = await ns.push(notify_info)
@@ -138,7 +138,7 @@ async def push_notification_and_mark_read(conn):
     # Mark one as read.
     notifications = await ns.get_unread(sent_notification_details.type)
     unread_count = len(notifications)
-    await ns.mark_as_read(notifications[0].id)
+    await ns.mark_as_read(notifications[0].id_)
     notifications = await ns.get_unread(sent_notification_details.type)
     assert len(notifications) == unread_count - 1, (len(notifications), unread_count)
 

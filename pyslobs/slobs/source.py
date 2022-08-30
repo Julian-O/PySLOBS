@@ -72,7 +72,7 @@ class Source(SlobsClass):
         return self._height
 
     @property
-    def id(self):
+    def id_(self):
         return self._id
 
     @property
@@ -107,7 +107,7 @@ class Source(SlobsClass):
             channel=response.get("channel", None),
             do_not_duplicate=response["doNotDuplicate"],
             height=response["height"],
-            id=response["id"],
+            id_=response["id"],
             muted=response["muted"],
             name=response["name"],
             source_id=response["sourceId"],

@@ -11,12 +11,12 @@ async def show_active_scene(conn):
     print(await pp.str_scene_multiline(active_scene, "", as_tree=True))
     print("------------")
     print("Same Scene, refetched, formatted differently")
-    active_scene_2 = await ss.get_scene(active_scene.id)
+    active_scene_2 = await ss.get_scene(active_scene.id_)
     print(await pp.str_scene_multiline(active_scene_2, ""))
     print("------------")
     active_scene_id_3 = await ss.active_scene_id()
-    assert active_scene.id == active_scene_id_3
-    assert active_scene_2.id == active_scene_id_3
+    assert active_scene.id_ == active_scene_id_3
+    assert active_scene_2.id_ == active_scene_id_3
     print("All Scenes")
     all_scenes = await ss.get_scenes()
     for scene in all_scenes:
