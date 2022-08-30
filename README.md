@@ -279,11 +279,3 @@ copy of Streamlabs Desktop, and run the examples (once PySLOBS is installed).
   too rapidly.
 * Notifications subtype may be `NEWS`, which is not mentioned in the documentation.
 * When a source is added, the `source_updated` callback may also be triggered an arbitrary number of times.
-
-## Breaking API Changes:
-
-### Version 2.0.0
-
-* `SlobsConnection.close()` is now a regular method, and not a co-routine. Do not await it.
-* There are no longer any identifiers called `id`. Method parameters and property fields are now all called `id_`, to
-  avoid shadowing the built-in function.

@@ -9,12 +9,12 @@ from .factories import source_factory, sceneitem_factory
 
 
 def iscenecollectionmanifestentry_factory(json_dict):
-    return ISceneCollectionsManifestEntry(id_=json_dict["id"], name=json_dict["name"])
+    return ISceneCollectionsManifestEntry(id=json_dict["id"], name=json_dict["name"])
 
 
 def iscenecollectionschema_factory(connection, json_dict):
     return ISceneCollectionSchema(
-        id_=json_dict["id"],
+        id=json_dict["id"],
         name=json_dict["name"],
         # The field is called scenes, but doesn't actually contain scenes.
         # Appears to be a novel type that references scenes. Returning the raw dict.
@@ -63,8 +63,8 @@ class SceneCollectionsService(SlobsService):
         )
         return iscenecollectionmanifestentry_factory(response)
 
-    async def delete(self, id_: Optional[str] = None) -> None:
-        response = await self._connection.command("delete", self._prepared_params([id_]))
+    async def delete(self, id: Optional[str] = None) -> None:
+        response = await self._connection.command("delete", self._prepared_params([id]))
         self._check_empty(response)
 
     async def fetch_scene_collections_schema(self):
@@ -78,12 +78,12 @@ class SceneCollectionsService(SlobsService):
             for subitem in response
         ]
 
-    async def load(self, id_: str) -> None:
-        response = await self._connection.command("load", self._prepared_params([id_]))
+    async def load(self, id: str) -> None:
+        response = await self._connection.command("load", self._prepared_params([id]))
         self._check_empty(response)
 
-    async def rename(self, new_name: str, id_: str) -> None:
+    async def rename(self, new_name: str, id: str) -> None:
         response = await self._connection.command(
-            "rename", self._prepared_params([new_name, id_])
+            "rename", self._prepared_params([new_name, id])
         )
         self._check_empty(response)

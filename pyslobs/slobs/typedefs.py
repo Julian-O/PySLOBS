@@ -36,7 +36,7 @@ class NotificationSubType(Enum):
 
 INotificationModel = namedtuple(
     "INotificationModel",
-    "action code data date id_ lifetime message play_sound "
+    "action code data date id lifetime message play_sound "
     "show_time  subtype  type  unread",
 )
 INOTIFICATIONOPTIONS_MANDATORY_FIELDS = {"message"}
@@ -60,7 +60,7 @@ IPerformanceState = namedtuple(
     "IPerformanceState",
     "cpu bandwidth frame_rate number_dropped_frames percentage_dropped_frames",
 )
-ISceneModel = namedtuple("ISceneModel", "id_ name nodes")
+ISceneModel = namedtuple("ISceneModel", "id name nodes")
 IStreamingState = namedtuple(
     "IStreamingState",
     "recording_status recording_status_time replay_buffer_status "
@@ -98,10 +98,10 @@ class TSceneNodeType(Enum):
 
 
 ISceneNodeModel = namedtuple(
-    "ISceneNodeModel", "children_ids id_ parent_id scene_id scene_node_type"
+    "ISceneNodeModel", "children_ids id parent_id scene_id scene_node_type"
 )
 
-ISceneNodeAddOptions = namedtuple("ISceneNodeAddOptions", "id_ source_add_options")
+ISceneNodeAddOptions = namedtuple("ISceneNodeAddOptions", "id source_add_options")
 
 ISourceAddOptions = namedtuple("ISourceAddOptions", "channel is_temporary")
 
@@ -124,7 +124,7 @@ ISourceModel = namedtuple(
         "channel",
         "do_not_duplicate",
         "height",
-        "id_",
+        "id",
         "muted",
         "name",
         "source_id",
@@ -134,9 +134,9 @@ ISourceModel = namedtuple(
     ],
 )
 
-ISceneCollectionsManifestEntry = namedtuple("ISceneCollectionsManifestEntry", "id_ name")
+ISceneCollectionsManifestEntry = namedtuple("ISceneCollectionsManifestEntry", "id name")
 
-ISceneCollectionSchema = namedtuple("ISceneCollectionSchema", "id_ name scenes sources")
+ISceneCollectionSchema = namedtuple("ISceneCollectionSchema", "id name scenes sources")
 
 ISceneCollectionCreateOptions = namedtuple("ISceneCollectionCreateOptions", "name")
 

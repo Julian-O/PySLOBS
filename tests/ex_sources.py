@@ -50,11 +50,6 @@ async def add_source(conn):
     assert events["SourcesService.sourceAdded"] == 1, events
     events = {}
 
-    # Had some timing issues in the tests. Strangely, this sleep seemed to
-    # resolve them.
-    await asyncio.sleep(4)
-    assert events == {}, events
-
     print("Created browser source:")
     print(await pp.str_source_multiline(source, ""))
 
@@ -79,14 +74,14 @@ async def add_source(conn):
 
     events = {}
 
-    # Refetch the same source by id_
-    source_2 = await ss.get_source(source.id_)
+    # Refetch the same source by id
+    source_2 = await ss.get_source(source.id)
     assert source_2.name == "Exercise Browser Source 2"
 
     # Get the source's model
     source_model = await source_2.get_model()
     assert source_model.name == "Exercise Browser Source 2"
-    assert source_model.source_id == source.id_
+    assert source_model.source_id == source.id
 
     has_props = await source_2.has_props()
     if has_props:

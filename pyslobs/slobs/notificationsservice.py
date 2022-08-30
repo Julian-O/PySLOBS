@@ -22,7 +22,7 @@ class NotificationsService(SlobsService):
             code=json_dict.get("code", None),
             data=json_dict.get("data", None),
             date=datetime.fromtimestamp(json_dict["date"] / 1000),
-            id_=json_dict["id"],
+            id=json_dict["id"],
             lifetime=json_dict["lifeTime"],
             message=json_dict["message"],
             play_sound=json_dict["playSound"],

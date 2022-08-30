@@ -21,7 +21,7 @@ class Scene(SlobsClass):
         connection,
         resource_id: str,
         source_id: str,
-        id_: str,
+        id: str,
         name: str,
         nodes: list[SceneNode],
     ):
@@ -31,7 +31,7 @@ class Scene(SlobsClass):
         # Warning may be out of date if changed on the server.
         # Use set_name to change
 
-        self._id = id_
+        self._id = id
         self._nodes = nodes
 
     def __str__(self):
@@ -46,7 +46,7 @@ class Scene(SlobsClass):
         return self._nodes
 
     @property
-    def id_(self):
+    def id(self):
         return self._id
 
     async def add_file(self, path, folder_id: Optional[str] = None) -> SceneNode:
@@ -60,8 +60,8 @@ class Scene(SlobsClass):
     ) -> SceneNode:
         options_dict = {}
         if options:
-            if options.id_ is not None:
-                options_dict["id"] = options.id_
+            if options.id is not None:
+                option_dict["id"] = options.id
             if options.source_add_options is not None:
                 source_add_options = {}
                 if options.source_add_options.channel is not None:

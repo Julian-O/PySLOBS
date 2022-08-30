@@ -58,7 +58,7 @@ class TestScene:
         self._initial_scene_id = None
         self._safe_test_scene_id = None
 
-    def id_(self):
+    def id(self):
         return self._safe_test_scene_id
 
     async def __aenter__(self):
