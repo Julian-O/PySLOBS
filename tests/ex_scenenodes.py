@@ -36,13 +36,21 @@ async def modify_scene_nodes(conn):
         # Add node to folder.
         await folder.add(scene_node.scene_item_id)
 
-        # Can't figure out how to create a subfolder!
-        # subfolder = await ts.create_folder("sub_folder")
-        # # Make node for source.
-        # print("Before: Subfolder's parent: ", await subfolder.get_parent())
-        # await subfolder.set_parent(folder.resource_id)
-        # print("Added subfolder to folder")
-        # print("After: Subfolder's parent: ", await subfolder.get_parent())
+        subfolder = await ts.create_folder("sub_folder")
+
+        # # I cannot figure how to use set_parent()
+        # for potential_parameter in (
+        #     folder.id_,
+        #     folder.resource_id,
+        #     folder.node_id,
+        #     await folder.get_node_index(),
+        #     folder.scene_id,
+        #     folder.source_id,
+        # ):
+        #     print("Before: Subfolder's parent: ", await subfolder.get_parent())
+        #     await subfolder.set_parent(potential_parameter)
+        #     print("Tried to use", potential_parameter)
+        #     print("After: Subfolder's parent: ", await subfolder.get_parent())
 
         print("Name before:", folder.name)
         await folder.set_name("Test folder renamed")
