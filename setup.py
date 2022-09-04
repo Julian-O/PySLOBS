@@ -7,7 +7,7 @@ setuptools.setup(
     name="PySLOBS",
     # If you want to bump the version, consider also bumping the
     # 'tested on' versions in the README.md.
-    version="2.0.1",
+    version="2.0.2",
     author="Julian-O",
     # author_email="",
     description="Python wrapper to StreamLabs Desktop API",

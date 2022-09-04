@@ -376,8 +376,10 @@ class SlobsConnection:
 
     def close(self):
         self.logger.debug("Request to close SlobsConnection.")
-        self.websocket.close()
-        # This will trigger the _receive_and_dispatch thread to clean up.
+        if self.websocket:
+            # This will trigger the _receive_and_dispatch thread to clean up.
+            self.websocket.close()
+            self.websocket = None
 
 
 class _MessageIdFactory:
