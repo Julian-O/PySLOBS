@@ -95,9 +95,7 @@ async def add_source(conn):
 
     await asyncio.sleep(0.1)
 
-    assert events == {
-        "SourcesService.sourceRemoved": 1,
-    }
+    assert events["SourcesService.sourceRemoved"] == 1, events
 
     events = {}
 
