@@ -5,7 +5,11 @@ import logging
 import time
 from typing import Any, Optional
 
-from websocket import create_connection, WebSocketTimeoutException
+from websocket import (
+    create_connection,
+    WebSocketTimeoutException,
+    WebSocketException,
+)
 
 from .config import ConnectionConfig, config_from_ini
 from .pubsubhub import PubSubHub, SubscriptionPreferences
@@ -74,8 +78,11 @@ class _SlobsWebSocket:
                     except TypeError as type_error:
                         raise ProtocolError(type_error)
                     return result
-            except WebSocketTimeoutException:
-                self.logger.debug("Retrying after timeout.")
+            except WebSocketTimeoutException as e:
+                self.logger.debug("Retrying after timeout (%s).", e)
+            except WebSocketException as e:
+                self.logger.warning("Websocket failure: (%s). Shutting down.", e)
+                self.close()
             except OSError as e:
                 if self.socket:
                     self.logger.warning("OSError received. Retrying: %s", e)
@@ -109,7 +116,12 @@ class _SlobsWebSocket:
 
     @staticmethod
     def _build_params_dict(id_, method, params):
-        request = {"jsonrpc": "2.0", "id": id_, "method": method, "params": params}
+        request = {
+            "jsonrpc": "2.0",
+            "id": id_,
+            "method": method,
+            "params": params,
+        }
         return request
 
 
@@ -262,8 +274,13 @@ class SlobsConnection:
 
         assert asyncio.iscoroutinefunction(callback)
         await self.hub.subscribe(key=message_id, callback_coroutine=callback)
-        response = await final_response_queue.get()
-        await self.hub.unsubscribe(key=message_id, callback_coroutine=callback)
+        try:
+            # Only wait for 5 seconds, in case remote end has been closed
+            # or forgotten in meantime, else raise TimeoutError
+            response = await asyncio.wait_for(final_response_queue.get(), 5)
+        finally:
+            if self.hub:
+                await self.hub.unsubscribe(key=message_id, callback_coroutine=callback)
 
         if isinstance(response, Exception):
             raise response
