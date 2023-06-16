@@ -3,7 +3,7 @@ PySLOBS: A Python Wrapper for the StreamLabs Desktop API
 
 ## About the API
 
-[Streamlabs Desktop](https://www.streamlabs.com) (formerly StreamLabs OBS) is a live streaming application 
+[Streamlabs Desktop](https://www.streamlabs.com) (formerly StreamLabs OBS) is a live-streaming application 
 based on a fork of [Open Broadcaster Software](https://obsproject.com) with additional 
 features.
 
@@ -20,7 +20,7 @@ followers. You will need to look elsewhere for that.
 Typically, it would be accessed from same computer that is running Streamlabs Desktop, or
 from a computer on the same LAN.
 
-The API is based on [WebSockets](https://en.wikipedia.org/wiki/WebSocket) so it can
+The API is based on [WebSockets](https://en.wikipedia.org/wiki/WebSocket), so it can
 be accessed from a browser in JavaScript. (Apparently, it can also be accessed through
 a named pipe.)
 
@@ -33,10 +33,8 @@ and more Pythonic interfaces are provided.
 ### Versions
 
 This API requires Python 3.9 or later. It is tested on Python 3.10.
-(If there is a good reason you need an earlier version of Python,
-please raise a GitHub issue.)
 
-Streamlabs Desktop versions from 1.2.0-1.10.0 have been tested.
+Streamlabs Desktop versions from 1.2.0-1.13.1 have been tested.
 
 ### Pythonic names and types
 
@@ -163,14 +161,14 @@ and prompt for the user to type in the API token each time.
 Once you have a connection, it can be used to instantiate any of nine Services:
 
 1. AudioService
-1. NotificationsService
-1. PerformanceService
-1. SceneCollectionsService
-1. ScenesService 
-1. SelectionService 
-1. SourcesService
-1. StreamingService
-1. TransitionsService
+2. NotificationsService
+3. PerformanceService
+4. SceneCollectionsService
+5. ScenesService 
+6. SelectionService 
+7. SourcesService
+8. StreamingService
+9. TransitionsService
 
 Services can be used:
   * subscribe to events, such as when the user selects a new active scene.
@@ -186,12 +184,12 @@ of `SlobsClass` in the Python API.
 SlobsClass subclasses include:
 
 1. AudioSource
-1. Scene
-1. SceneItem
-1. SceneItemFolder
-1. SceneNode
-1. Selection
-1. Source
+2. Scene
+3. SceneItem
+4. SceneItemFolder
+5. SceneNode
+6. Selection
+7. Source
 
 Instances of SlobsClass should only be constructed through Services methods and methods
 on other instances. 
@@ -279,3 +277,5 @@ copy of Streamlabs Desktop, and run the examples (once PySLOBS is installed).
   too rapidly.
 * Notifications subtype may be `NEWS`, which is not mentioned in the documentation.
 * When a source is added, the `source_updated` callback may also be triggered an arbitrary number of times.
+* Commands may raise an asyncio.TimeoutError after 5 seconds if a websocket fails (e.g. a network error)
+  between the time the command was sent and a reply was received. 
