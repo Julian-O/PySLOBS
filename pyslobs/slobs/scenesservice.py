@@ -37,7 +37,7 @@ class ScenesService(SlobsService):
 
     async def get_scene(self, scene_id: str) -> Scene:
         response = await self._connection.command(
-            "activeScene", self._prepared_params([scene_id])
+            "getScene", self._prepared_params([scene_id])
         )
         return scene_factory(self._connection, response)
 
