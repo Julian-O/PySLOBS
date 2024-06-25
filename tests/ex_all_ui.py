@@ -20,14 +20,14 @@ async def show_notification_dialog(conn, delay):
 
 async def show_add_source_dialog(conn, delay):
     ss = SourcesService(conn)
-    print("Please note the 'Name source' dialogue.")
+    print("Please note the 'Add Source/Add New Source' dialogue.")
     await ss.show_add_source("This doesn't matter?")
     await asyncio.sleep(delay)
 
 
 async def show_add_showcase_dialog(conn, delay):
     ss = SourcesService(conn)
-    print("Please note the 'Select source type' dialogue.")
+    print("Please note the 'Add Source/source selection' dialogue.")
     await ss.show_showcase()
     await asyncio.sleep(delay)
 
