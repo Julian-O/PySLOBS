@@ -32,9 +32,9 @@ and more Pythonic interfaces are provided.
 
 ### Versions
 
-This API requires Python 3.9 or later. It is tested on Python 3.10.
+This API requires Python 3.9 or later. It is tested on Python 3.12.
 
-Streamlabs Desktop versions from 1.2.0-1.13.1 have been tested.
+Streamlabs Desktop versions from 1.2.0-1.16.7 have been tested.
 
 ### Pythonic names and types
 
@@ -275,6 +275,13 @@ copy of Streamlabs Desktop, and run the examples (once PySLOBS is installed).
   too rapidly.
 * `TransitionsService` methods sometimes raise Internal Server Errors if called 
   too rapidly.
+* `SceneItem` has two methods, `placeAfter` and `placeBefore` that take 
+  `nodeId`s. (Compare that to `Selection`'s equivalent methods that take
+  `sceneNodeId`s.) It isn't clear whether to pass:
+     * `id`s - which sometimes work and sometimes raises an Internal Server
+       Error (Index not found in Scene). The cause of this remains unknown.
+     * `sceneItemId`s - which appear to be identical to `id`s, or
+     * `nodeId`s - which are often, unexpectedly, None
 * Notifications subtype may be `NEWS`, which is not mentioned in the documentation.
 * When a source is added, the `source_updated` callback may also be triggered an arbitrary number of times.
 * Commands may raise an asyncio.TimeoutError after 5 seconds if a websocket fails (e.g. a network error)
