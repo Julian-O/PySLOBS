@@ -73,6 +73,10 @@ class SlobsService(SlobsBase):
         # match the Javascript Resource names.
         super().__init__(connection, resource_id=self.__class__.__name__)
 
+    def __str__(self):
+        # Override to omit the repetitive source id,
+        return f"{self.__class__.__name__}()"
+
 
 class SlobsClass(SlobsBase):
     """Base class for proxies to "Classes" in the data model
