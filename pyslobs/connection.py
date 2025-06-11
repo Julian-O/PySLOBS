@@ -24,7 +24,6 @@ class ProtocolError(Exception):
 
 
 class _SlobsWebSocket:
-
     """
     _SlobsWebSocket is a class internal to the API. It is not used by
     a client.
@@ -74,18 +73,25 @@ class _SlobsWebSocket:
                     try:
                         result = json.loads(raw_message)
                     except json.JSONDecodeError as json_error:
-                        raise ProtocolError("%s from %s" % (json_error, raw_message))
+                        raise ProtocolError(
+                            "%s from %s" % (json_error, raw_message))
                     except TypeError as type_error:
                         raise ProtocolError(type_error)
                     return result
             except WebSocketTimeoutException as e:
                 self.logger.debug("Retrying after timeout (%s).", e)
             except WebSocketException as e:
-                self.logger.warning("Websocket failure: (%s). Shutting down.", e)
-                self.close()
+                if self.socket and self.socket.connected:
+                    self.logger.warning("Websocket failure: (%s). Shutting down.",
+                                        e)
+                    self.close()
+                else:
+                    self.logger.debug("Websocket closed. Shutting down")
             except OSError as e:
-                if self.socket:
-                    self.logger.warning("OSError received. Retrying: %s", e)
+                if self.socket and self.socket.connected:
+                    self.logger.warning(
+                        "OSError received. Retrying: %s",
+                            e)
                     time.sleep(1)  # To prevent busy-loop
                 else:
                     self.logger.debug("Socket closed. Shutting down")
@@ -206,7 +212,9 @@ class SlobsConnection:
         """
         if self.websocket:
             loop = asyncio.get_running_loop()
-            return await loop.run_in_executor(None, self.websocket.receive_message)
+            return await loop.run_in_executor(None,
+                                              self.websocket.receive_message)
+        return None
 
     async def _receive_and_dispatch(self):
         """
@@ -280,7 +288,8 @@ class SlobsConnection:
             response = await asyncio.wait_for(final_response_queue.get(), 5)
         finally:
             if self.hub:
-                await self.hub.unsubscribe(key=message_id, callback_coroutine=callback)
+                await self.hub.unsubscribe(key=message_id,
+                                           callback_coroutine=callback)
 
         if isinstance(response, Exception):
             raise response
@@ -299,7 +308,8 @@ class SlobsConnection:
 
             result = response["result"] or {}
 
-            if isinstance(result, dict) and result.get("emitter", "NA") == "PROMISE":
+            if isinstance(result, dict) and result.get("emitter",
+                                                       "NA") == "PROMISE":
                 # Server is informing that the result may be some time.
                 # It will come as an event.
                 key = result["resourceId"]
@@ -322,20 +332,23 @@ class SlobsConnection:
             else:
                 await queue.put(result)
         except Exception:
-            self.logger.exception("_command_accept_result_of_promise has failed!")
+            self.logger.exception(
+                "_command_accept_result_of_promise has failed!")
 
-    async def _command_accept_event_as_response(self, _, response, queue) -> None:
+    async def _command_accept_event_as_response(self, _, response,
+                                                queue) -> None:
         try:
             await queue.put(response)
         except Exception:
-            self.logger.exception("_command_accept_event_as_response has failed!")
+            self.logger.exception(
+                "_command_accept_event_as_response has failed!")
 
     async def subscribe(
-        self,
-        method,
-        params,
-        callback_coroutine,
-        subscription_preferences=SubscriptionPreferences(),
+            self,
+            method,
+            params,
+            callback_coroutine,
+            subscription_preferences=SubscriptionPreferences(),
     ) -> Any:
         """
         Send a command that subscribes to events.
@@ -348,11 +361,13 @@ class SlobsConnection:
         # know the resource_id here until we ask.
         response = await self.command(method, params)
         if response.get("_type") != "SUBSCRIPTION":
-            raise ProtocolError("Badly formed subscription response: %s" % response)
+            raise ProtocolError(
+                "Badly formed subscription response: %s" % response)
         try:
             resource_id = response["resourceId"]
         except KeyError:
-            raise ProtocolError("Badly formed subscription response: %s" % response)
+            raise ProtocolError(
+                "Badly formed subscription response: %s" % response)
 
         if not self.hub:
             raise ProtocolError("Connection already closed.")
@@ -377,7 +392,8 @@ class SlobsConnection:
         )
         # Only tell server if no-one else is interested.
         if not self.hub.has_subscribers(resource_id):
-            response = await self.command("unsubscribe", {"resource": resource_id})
+            response = await self.command("unsubscribe",
+                                          {"resource": resource_id})
             if not response:
                 raise ProtocolError("Unsubscribe failed.")
 
