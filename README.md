@@ -34,7 +34,7 @@ and more Pythonic interfaces are provided.
 
 This API requires Python 3.9 or later. It is tested on Python 3.12.
 
-Streamlabs Desktop versions from 1.2.0-1.16.7 have been tested.
+Streamlabs Desktop versions from 1.2.0-1.18.3 have been tested.
 
 ### Pythonic names and types
 
