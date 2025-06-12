@@ -15,11 +15,9 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Julian-O/pyslobs",
     packages=setuptools.find_packages(),
-    tests_require=[],
-    install_requires=["websocket_client"],
+    install_requires=["websocket-client"],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Development Status :: 5 - Production/Stable",
         "Framework :: AsyncIO",
