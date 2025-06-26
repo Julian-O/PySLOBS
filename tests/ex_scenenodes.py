@@ -55,6 +55,7 @@ async def modify_scene_nodes(conn):
         print("Name before:", folder.name)
         await folder.set_name("Test folder renamed")
         print("Name after:", folder.name)
+        assert folder.name == "Test folder renamed"
 
         # This exercises get_folders and get_items
         print(
@@ -100,9 +101,10 @@ async def modify_scene_nodes(conn):
         await asyncio.sleep(15)
 
         print("Pattern should now reappear on screen (not in stream though).")
-        assert scene_node.visible == False
+        assert not scene_node.visible
         await scene_node.set_visibility(visible=True)
-        assert scene_node.visible == True
+        assert scene_node.visible
+        assert not scene_node.stream_visible
 
         await asyncio.sleep(5)
 
@@ -115,6 +117,9 @@ async def modify_scene_nodes(conn):
             refetched_scene_node.visible,
             refetched_scene_node.stream_visible,
         )
+        assert refetched_scene_node.locked
+        assert refetched_scene_node.visible
+        assert not refetched_scene_node.stream_visible
 
         await asyncio.sleep(2)
     print("Scene deleted, old scene made active (via sceneservice)")
