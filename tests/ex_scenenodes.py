@@ -121,6 +121,20 @@ async def modify_scene_nodes(conn):
         assert refetched_scene_node.visible
         assert not refetched_scene_node.stream_visible
 
+        assert refetched_scene_node.resource_id == scene_node.resource_id
+        assert refetched_scene_node.source_id == scene_node.source_id
+        assert refetched_scene_node.id_ == scene_node.id_
+        assert refetched_scene_node.node_id == scene_node.node_id
+
+        # Old scene_node was created without a parent, and is not updated
+        # (working as designed)
+        assert not scene_node.parent_id
+        assert refetched_scene_node.parent_id
+
+        assert refetched_scene_node.scene_id == scene_node.scene_id
+        assert refetched_scene_node.scene_node_type == scene_node.scene_node_type
+        assert refetched_scene_node.name == scene_node.name
+
         await asyncio.sleep(2)
     print("Scene deleted, old scene made active (via sceneservice)")
 
