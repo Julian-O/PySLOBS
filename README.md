@@ -34,7 +34,7 @@ and more Pythonic interfaces are provided.
 
 This API requires Python 3.9 or later. It is tested on Python 3.13.
 
-Streamlabs Desktop versions from 1.2.0-1.18.3 have been tested.
+Streamlabs Desktop versions from 1.2.0-1.19.3 have been tested.
 
 ### Pythonic names and types
 
@@ -122,20 +122,22 @@ it is, a new token should be generated.
 
 ##### Obtaining connection details
 
-To obtain all these details, start Streamlabs Desktop, open the settings page, and select
-"Remote Control". A (blurry) QR code will be displayed. Do not show that QR code on
-your stream.
+Warning: Do not reveal these details to viewers while on stream.
 
-If you click on the QR code, and click "Show Details" underneath it, you will be given
-the following details:
+To obtain all these details, start Streamlabs Desktop, open the Settings page, and select
+"Mobile". Look for the section titled "Third Party Connections".
 
- * API token
+If the "Allow third party connections" is turned off, turn it on.
+
+The fields underneath will display:
+
+ * IP addresses: If your application is on a different host to Streamlabs Desktop, your
+    Python application will need to know one of the IP addresses offered.
 
  * Port: This should default to 59650. If it is a different value, your Python
     application will need to know this.
 
- * IP addresses: If your application is on a different host to Streamlabs Desktop, your
-    Python application will need to know one of the IP addresses offered.
+ * API token
 
 ##### Using connection details
 
@@ -152,6 +154,9 @@ The content of the ini file should be:
     domain=localhost
     port=59650
     token=<your secret token>
+
+If your application is on a different host to Streamlabs Desktop, the domain 
+field should contain one of the IP addresses of your streaming host.
 
 When running the examples or exercises, if no ini file is found, it will assume defaults
 and prompt for the user to type in the API token each time.
