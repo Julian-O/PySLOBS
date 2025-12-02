@@ -163,6 +163,14 @@ class SlobsConnection:
 
     logger = logging.getLogger("slobsapi.SlobsConnection")
 
+    TIMEOUT : float | None = 5
+    # Number of seconds a command has to get a response before raising a
+    # Timeout exception.
+    # Keeping the value low makes the system more responsive to failed
+    # connections. In practice, 5 seconds in plenty, but there are edge cases
+    # (e.g. hundreds of scenes) where StreamLabs does take longer, and this
+    # needs to be increased.
+
     def __init__(self, connection_config: Optional[ConnectionConfig] = None):
 
         connection_config = connection_config or config_from_ini()
@@ -283,9 +291,9 @@ class SlobsConnection:
         assert asyncio.iscoroutinefunction(callback)
         await self.hub.subscribe(key=message_id, callback_coroutine=callback)
         try:
-            # Only wait for 5 seconds, in case remote end has been closed
-            # or forgotten in meantime, else raise TimeoutError
-            response = await asyncio.wait_for(final_response_queue.get(), 5)
+            # Only wait for TIMEOUT seconds, else raise TimeoutError
+            response = await asyncio.wait_for(
+                final_response_queue.get(), timeout=self.TIMEOUT)
         finally:
             if self.hub:
                 await self.hub.unsubscribe(key=message_id,
