@@ -13,6 +13,7 @@ _FIELD_MAPS = {
     "sub_type": "subType",
     }
 
+
 # Translate from Pythonic dictionary keys to Javascripty ones.
 # Only required for dictionaries passed to API by client.
 def _translate_dict(raw_dict):
@@ -109,7 +110,7 @@ ITransform = namedtuple("ITransform", "crop position rotation scale")
 
 IObsListOption = namedtuple("IObsListOptions", "value description")
 
-# These is unclearly defined.
+# This is unclearly defined.
 TObsFormData = str
 
 # This is one of the source types, like browser_source.
