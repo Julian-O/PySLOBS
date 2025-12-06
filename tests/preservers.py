@@ -3,6 +3,7 @@
     managers to help ensure that the configuration is returned to its original
     state at the end of the exercise.
 """
+import asyncio
 from datetime import datetime
 
 from pyslobs import (
@@ -10,6 +11,7 @@ from pyslobs import (
     StreamingService,
     ScenesService,
     NotificationsService,
+    ProtocolError,
 )
 
 
