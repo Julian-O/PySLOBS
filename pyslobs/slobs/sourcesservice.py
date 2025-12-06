@@ -44,7 +44,7 @@ class SourcesService(SlobsService):
         )
         return source_factory(self._connection, response)
 
-    async def get_available_sources_types_list(self) -> list[any]:
+    async def get_available_sources_types_list(self) -> list[IObsListOption]:
         response = await self._connection.command(
             "getAvailableSourcesTypesList", self._prepared_params([])
         )
@@ -97,7 +97,7 @@ class SourcesService(SlobsService):
         )
         self._check_empty(response)
 
-    async def show_source_properties(self, source_id: str) -> Source:
+    async def show_source_properties(self, source_id: str):
         """
         Causes the UI to open the settings dialog box on the selected source.
         """
