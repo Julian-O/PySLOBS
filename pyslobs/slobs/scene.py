@@ -4,12 +4,14 @@ from ..apibase import SlobsClass
 if TYPE_CHECKING:
     from .scenenode import (
         SceneNode,
+        SceneItem
     )
 else:
     SceneNode = None
 
 from .source import Source
 from .factories import (
+    scene_factory,
     scenenode_factory,
     sceneitem_factory,
     sceneitemfolder_factory,
@@ -17,7 +19,7 @@ from .factories import (
     source_factory,
     register,
 )
-from .typedefs import ISceneNodeAddOptions, ISourceAddOptions, TSourceType
+from .typedefs import ISceneNodeAddOptions, TSourceType
 
 
 class Scene(SlobsClass):
@@ -62,7 +64,7 @@ class Scene(SlobsClass):
 
     async def add_source(
         self, source_id: str, options: Optional[ISceneNodeAddOptions] = None
-    ) -> SceneNode:
+    ) -> SceneItem:
         options_dict = {}
         if options:
             if options.id is not None:
@@ -92,7 +94,7 @@ class Scene(SlobsClass):
         self._check_empty(response)
 
     async def create_and_add_source(
-        self, name: str, type_: TSourceType, settings: Optional[dict[Any]] = None
+        self, name: str, type_: TSourceType, settings: Optional[dict[Any, Any]] = None
     ):  # -> SceneItem:
         response = await self._connection.command(
             "createAndAddSource", self._prepared_params([name, type_, settings])
@@ -153,7 +155,7 @@ class Scene(SlobsClass):
         response = await self._connection.command(
             "getNode", self._prepared_params([scene_node_id])
         )
-        return scenenode_factory(self._connection, source)
+        return scenenode_factory(self._connection, response)
 
     async def get_node_by_name(self, name: str) -> Optional[Source]:
         response = await self._connection.command(
@@ -167,7 +169,7 @@ class Scene(SlobsClass):
     async def get_nodes(self):  # -> Source
         response = await self._connection.command("getNodes", self._prepared_params())
         result = [scenenode_factory(self._connection, source) for source in response]
-        # Update attributes as a side-effect
+        # Update attributes as a side effect
         self._nodes = result
         return result
 
