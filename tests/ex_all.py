@@ -10,7 +10,7 @@ from ex_scenecollections import (
     exercise_scenecollections_ro,
     exercise_scenecollections_rw,
 )
-from ex_scenenodes import exercise_scenenodes_rw
+from ex_scenenodes import exercise_scenenodes_ro, exercise_scenenodes_rw
 from ex_sources import exercise_sourcesservice_ro, exercise_sourcesservice_rw
 from ex_streaming import exercise_streaming_ro, exercise_streaming_destructive
 from ex_transitions import exercise_transitionservice_ro, exercise_transitionservice_rw
@@ -25,6 +25,7 @@ async def exercise_all_ro(conn):
     await exercise_scenecollections_ro(conn)
     await exercise_sourcesservice_ro(conn)
     await exercise_transitionservice_ro(conn)
+    await exercise_scenenodes_ro(conn)
     await exercise_streaming_ro(conn)
 
 

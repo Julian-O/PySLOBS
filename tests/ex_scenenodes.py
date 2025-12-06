@@ -5,6 +5,13 @@ import formatters as pp
 from preservers import TestScene
 
 
+async def dump_active_scene_nodes(conn):
+    scenes_service = ScenesService(conn)
+    active_scene = await scenes_service.active_scene()
+    for node in await active_scene.get_nodes():
+        print(await pp.str_node_tree_multiline(node, indent="", extended=True))
+
+
 async def modify_scene_nodes(conn):
     ss = SourcesService(conn)
     source = await ss.create_source(
@@ -39,6 +46,7 @@ async def modify_scene_nodes(conn):
         subfolder = await ts.create_folder("sub_folder")
 
         # # I cannot figure how to use set_parent()
+        # # Could add subfolder to folder, but defeats the point.
         # for potential_parameter in (
         #     folder.id_,
         #     folder.resource_id,
@@ -141,6 +149,10 @@ async def modify_scene_nodes(conn):
     # Source is implicitly deleted (!)
 
 
+async def exercise_scenenodes_ro(conn):
+    await dump_active_scene_nodes(conn)
+
+
 async def exercise_scenenodes_rw(conn):
     await modify_scene_nodes(conn)
 
@@ -148,4 +160,5 @@ async def exercise_scenenodes_rw(conn):
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
 
+    run_exercise(exercise_scenenodes_ro)
     run_exercise(exercise_scenenodes_rw)

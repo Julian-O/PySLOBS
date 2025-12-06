@@ -124,4 +124,5 @@ async def exercise_sourcesservice_rw(conn):
 if __name__ == "__main__":
     from tests.runexercise import run_exercise
 
+    run_exercise(exercise_sourcesservice_ro)
     run_exercise(exercise_sourcesservice_rw)
