@@ -283,7 +283,7 @@ class SelectionBase:
         )
         self._check_empty(response)
 
-    async def set_visibility(self, visible: boolean) -> None:
+    async def set_visibility(self, visible: bool) -> None:
         response = await self._connection.command(
             "setVisibility", self._prepared_params([visible])
         )

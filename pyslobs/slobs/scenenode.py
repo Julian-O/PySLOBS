@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any, Optional, TYPE_CHECKING
+
 from .factories import (
     scenenode_factory,
     sceneitem_factory,
@@ -11,6 +13,8 @@ from .factories import (
 )
 from ..apibase import SlobsClass
 from .typedefs import ITransform, TSceneNodeType, ISceneNodeModel, IVec2
+if TYPE_CHECKING:
+    from .selection import Selection
 
 
 class SceneNode(SlobsClass):
@@ -80,19 +84,19 @@ class SceneNode(SlobsClass):
 
     async def get_model(self):  # -> ISceneNodeModel:
         response = await self._connection.command("getModel", self._prepared_params())
-        return scenenode_factory(response)
+        return scenenode_factory(self._connection, response)
 
     async def get_next_item(self):  # -> ISceneItem:
         response = await self._connection.command(
             "getNextItem", self._prepared_params()
         )
-        return sceneitem_factory(response)
+        return sceneitem_factory(self._connection, response)
 
     async def get_next_node(self):  # -> ISceneNodeModel:
         response = await self._connection.command(
             "getNextNode", self._prepared_params()
         )
-        return scenenode_factory(response)
+        return scenenode_factory(self._connection, response)
 
     async def get_node_index(self) -> int:
         response = await self._connection.command(
@@ -116,13 +120,13 @@ class SceneNode(SlobsClass):
         response = await self._connection.command(
             "getPrevItem", self._prepared_params()
         )
-        return sceneitem_factory(response)
+        return sceneitem_factory(self._connection, response)
 
     async def get_prev_node(self) -> ISceneNodeModel:
         response = await self._connection.command(
             "getPrevNode", self._prepared_params()
         )
-        return scenenode_factory(response)
+        return scenenode_factory(self._connection, response)
 
     async def get_scene(self):
         response = await self._connection.command("getScene", self._prepared_params())
@@ -231,7 +235,7 @@ class SceneItemFolder(SceneNode):
             scenenode_factory(self._connection, json_dict) for json_dict in response
         ]
 
-    async def get_nodes(self) -> list[SceneItem]:
+    async def get_nodes(self) -> list[SceneNode]:
         response = await self._connection.command("getNodes", self._prepared_params())
         return [
             scenenode_factory(self._connection, json_dict) for json_dict in response
@@ -241,7 +245,7 @@ class SceneItemFolder(SceneNode):
         response = await self._connection.command(
             "getSelection", self._prepared_params()
         )
-        return selection_factory(self._connection, json_dict)
+        return selection_factory(self._connection, response)
 
     async def set_name(self, new_name: str):
         response = await self._connection.command(
@@ -364,7 +368,7 @@ class SceneItem(SceneNode):
         self._check_empty(response)
 
     async def set_scale(
-        self, new_scale_model: IVec2, origin: Option[IVec2] = None
+        self, new_scale_model: IVec2, origin: Optional[IVec2] = None
     ) -> None:
         scm_params = {
             "x": new_scale_model.x,
@@ -390,7 +394,7 @@ class SceneItem(SceneNode):
             scale=new_scale_model,
         )
 
-    async def set_settings(self, settings: dict[Any]) -> None:
+    async def set_settings(self, settings: dict[Any, Any]) -> None:
         params = {}
         if settings.get("locked", None) is not None:
             params["locked"] = settings["locked"]

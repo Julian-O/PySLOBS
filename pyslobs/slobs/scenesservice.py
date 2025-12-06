@@ -1,6 +1,6 @@
 from ..apibase import SlobsService, Event
 from .scene import Scene
-from .factories import scenenode_factory, scene_factory
+from .factories import scene_factory
 from .typedefs import ISceneModel
 
 
@@ -17,7 +17,7 @@ class ScenesService(SlobsService):
             connection, "sceneSwitched", self.__class__.__name__
         )
 
-    async def active_scene(self):
+    async def active_scene(self) -> Scene:
         response = await self._connection.command(
             "activeScene", self._prepared_params()
         )

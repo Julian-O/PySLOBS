@@ -1,8 +1,13 @@
-from typing import Optional, Any
+from typing import Optional, Any, TYPE_CHECKING
 from ..apibase import SlobsClass
-from .scenenode import (
-    SceneNode,
-)
+
+if TYPE_CHECKING:
+    from .scenenode import (
+        SceneNode,
+    )
+else:
+    SceneNode = None
+
 from .source import Source
 from .factories import (
     scenenode_factory,
@@ -61,7 +66,7 @@ class Scene(SlobsClass):
         options_dict = {}
         if options:
             if options.id is not None:
-                option_dict["id"] = options.id
+                options_dict["id"] = options.id
             if options.source_add_options is not None:
                 source_add_options = {}
                 if options.source_add_options.channel is not None:
