@@ -91,7 +91,7 @@ class _SlobsWebSocket:
                 if self.socket and self.socket.connected:
                     self.logger.warning(
                         "OSError received. Retrying: %s",
-                            e)
+                        e)
                     time.sleep(1)  # To prevent busy-loop
                 else:
                     self.logger.debug("Socket closed. Shutting down")
@@ -163,7 +163,7 @@ class SlobsConnection:
 
     logger = logging.getLogger("slobsapi.SlobsConnection")
 
-    TIMEOUT : float | None = 5
+    TIMEOUT: float | None = 5
     # Number of seconds a command has to get a response before raising a
     # Timeout exception.
     # Keeping the value low makes the system more responsive to failed
