@@ -147,20 +147,58 @@ def str_node(node):
         + (" Source-Id: " + str(node.source_id))
     )
 
+async def str_nodeitem(nodeitem, indent, extended=False):
+    summary_line = indent + "    +- " + str_node(nodeitem) + "\n"
+    if extended:
+        visibility_line =  (
+            indent + "     | " +
+            ("locked " if nodeitem.locked else "unlocked") +
+            ("stream-invisible " if not nodeitem.stream_visible else "") +
+            ("rec-invisible " if not nodeitem.recording_visible else "") +
+            ("rec-invisible " if not nodeitem.visible else "") +
+            "\n")
 
-async def str_node_tree_multiline(node, indent):
-    first_line = indent + "    +- " + str_node(node) + "\n"
+        crop_line = (
+            indent + "     | " +
+            ("crop: (t:%s l:%s b:%s r:%s) " % (
+                nodeitem.transform.crop.top,
+                nodeitem.transform.crop.left,
+                nodeitem.transform.crop.bottom,
+                nodeitem.transform.crop.right,
+            )) +
+            "\n")
+
+        position_line = (
+            indent + "     | " +
+            ("pos: (x:%s y:%s) rot: %s scale: %s" % (
+                nodeitem.transform.position.x,
+                nodeitem.transform.position.y,
+                nodeitem.transform.rotation,
+                nodeitem.transform.scale,
+            )) +
+            "\n")
+
+        return summary_line + visibility_line + crop_line + position_line
+    else:
+        return summary_line
+
+
+async def str_node_tree_multiline(node, indent, extended=False):
     if node.scene_node_type == TSceneNodeType.ITEM:
-        return first_line
+        return await str_nodeitem(node, indent, extended)
+
+    # Must be an ITEMFOLDER
+
+    heading_line = indent + "    +- " + await str_node(node) + "\n"
 
     sub_nodes = await node.get_nodes()
     trailing_lines = "".join(
         [
-            (await str_node_tree_multiline(sub_node, indent + "    |"))
+            (await str_node_tree_multiline(sub_node, indent + "    |", extended))
             for sub_node in sub_nodes
         ]
     )
-    return first_line + trailing_lines
+    return heading_line + trailing_lines
 
 
 async def str_node_tree_multiline_folders_first(node, indent):
