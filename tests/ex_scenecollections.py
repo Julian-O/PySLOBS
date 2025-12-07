@@ -27,7 +27,11 @@ async def create_load_delete_collection(conn):
     await asyncio.sleep(1)  # Try to avoid overloading server
     original_collection = await scs.active_collection()
     await asyncio.sleep(1)  # Try to avoid overloading server
+
+    # Next command can be too slow.
+    conn.TIMEOUT += 15
     sc = await scs.create(ISceneCollectionCreateOptions("SceneCollectionExercise"))
+    conn.TIMEOUT -= 15
     await asyncio.sleep(1)  # Try to avoid overloading server
     await scs.rename("SceneCollectionExercise2", sc.id)
     await asyncio.sleep(1)  # Try to avoid overloading server
