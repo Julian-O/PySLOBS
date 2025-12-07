@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     )
 else:
     SceneNode = None
+    SceneItem = None
 
 from .source import Source
 from .factories import (
