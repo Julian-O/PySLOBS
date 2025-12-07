@@ -191,7 +191,7 @@ async def str_node_tree_multiline(node, indent, extended=False):
 
     # Must be an ITEMFOLDER
 
-    heading_line = indent + "    +- " + await str_node(node) + "\n"
+    heading_line = indent + "    +- " + str_node(node) + "\n"
 
     sub_nodes = await node.get_nodes()
     trailing_lines = "".join(
