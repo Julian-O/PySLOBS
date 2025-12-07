@@ -2,7 +2,7 @@ from pyslobs import MonitoringType, TSceneNodeType
 
 
 def str_emonitoringtype(emt):
-    return "No Monitoring" if emt == MonitoringType.NONE else (emt.name)
+    return "No Monitoring" if emt == MonitoringType.NONE else emt.name
 
 
 def str_ifader(ifader):
@@ -11,24 +11,24 @@ def str_ifader(ifader):
 
 def str_iaudiosourcemodel_multiline(model, indent):
     return (
-        indent
-        + "+- Model:"
-        + (" " + repr(model.name))
-        + ("\n" + indent + "|    ")
-        + (" Source id: " + model.source_id)
-        + ("\n" + indent + "|    ")
-        + (" muted " if model.muted else "")
-        + (" Mixers: " + f"{model.audio_mixers}")
-        + (" forced-mono" if model.force_mono else "")
-        + (" mixer-hidden" if model.mixer_hidden else "")
-        + f" sync-offset: {model.sync_offset}"
-        + (" " + str_emonitoringtype(model.monitoring_type))
-        + ("\n" + indent + "|    ")
-        + " Fader:"
-        + f" {model.fader.db}db"
-        + f" def:{model.fader.deflection}"
-        + f" mul:{model.fader.mul}"
-        + "\n"
+            indent
+            + "+- Model:"
+            + (" " + repr(model.name))
+            + ("\n" + indent + "|    ")
+            + (" Source id: " + model.source_id)
+            + ("\n" + indent + "|    ")
+            + (" muted " if model.muted else "")
+            + (" Mixers: " + f"{model.audio_mixers}")
+            + (" forced-mono" if model.force_mono else "")
+            + (" mixer-hidden" if model.mixer_hidden else "")
+            + f" sync-offset: {model.sync_offset}"
+            + (" " + str_emonitoringtype(model.monitoring_type))
+            + ("\n" + indent + "|    ")
+            + " Fader:"
+            + f" {model.fader.db}db"
+            + f" def:{model.fader.deflection}"
+            + f" mul:{model.fader.mul}"
+            + "\n"
     )
 
 
@@ -45,44 +45,45 @@ def str_inotificationsettings(settings):
 async def str_audiosource_multiline(audio_source, indent):
     model = await audio_source.get_model()
     return (
-        indent
-        + "+- AudioSource:"
-        + "\n"
-        + str_iaudiosourcemodel_multiline(model, indent + "| ")
+            indent
+            + "+- AudioSource:"
+            + "\n"
+            + str_iaudiosourcemodel_multiline(model, indent + "| ")
     )
 
 
 async def str_audiosources_multiline(audio_sources, indent):
     return "".join(
-        [(await str_audiosource_multiline(source, "  ")) for source in audio_sources]
+        [(await str_audiosource_multiline(source, indent + "  ")) for source in
+         audio_sources]
     )
 
 
 def str_notificationmodel_multiline(model, indent):
     return (
-        indent
-        + "+- Notification"
-        + f"({model.id}):"
-        + (" " + model.type.name + "/" + model.subtype.name)
-        + (" " + model.message)
-        + ("\n" + indent + "|    ")
-        + ("unread" if model.unread else "read")
-        + f" date: {model.date}"
-        + f" lifetime: {model.lifetime}"
-        + ("\n" + indent + "|    ")
-        + (f"action: {model.action}" if model.code else "no-action")
-        + (f" code: {model.code}" if model.code else " no-code")
-        + (f" data: {model.data}" if model.data else " no-data")
-        + (" show-time" if model.show_time else "")
-        + (" sound" if model.play_sound else " muted")
-        + "\n"
+            indent
+            + "+- Notification"
+            + f"({model.id}):"
+            + (" " + model.type.name + "/" + model.subtype.name)
+            + (" " + model.message)
+            + ("\n" + indent + "|    ")
+            + ("unread" if model.unread else "read")
+            + f" date: {model.date}"
+            + f" lifetime: {model.lifetime}"
+            + ("\n" + indent + "|    ")
+            + (f"action: {model.action}" if model.code else "no-action")
+            + (f" code: {model.code}" if model.code else " no-code")
+            + (f" data: {model.data}" if model.data else " no-data")
+            + (" show-time" if model.show_time else "")
+            + (" sound" if model.play_sound else " muted")
+            + "\n"
     )
 
 
 def str_notificationmodels_multiline(notifications, indent):
     return "".join(
         [
-            (str_notificationmodel_multiline(notification, "  "))
+            (str_notificationmodel_multiline(notification, indent + "  "))
             for notification in notifications
         ]
     )
@@ -103,7 +104,7 @@ def str_itransitionsservicestate(state):
 
 
 async def str_scene_multiline(
-    scene, indent, show_nodes=True, as_tree=False, folders_first=False
+        scene, indent, show_nodes=True, as_tree=False, folders_first=False
 ):
     if not show_nodes:
         nodes = ""
@@ -124,59 +125,60 @@ async def str_scene_multiline(
         nodes = "\n" + "".join(sub_item_strs)
 
     return (
-        indent
-        + "+- Scene:"
-        + (" " + repr(scene.name))
-        + ("\n" + indent + "|    ")
-        + ("Source id: " + scene.source_id)
-        + (" Id: " + scene.id)
-        + nodes
+            indent
+            + "+- Scene:"
+            + (" " + repr(scene.name))
+            + ("\n" + indent + "|    ")
+            + ("Source id: " + scene.source_id)
+            + (" Id: " + scene.id)
+            + nodes
     )
 
 
 def str_node(node):
     return (
-        node.__class__.__name__
-        + ":"
-        + (" " + node.name)
-        + (" (" + node.scene_node_type.name + ")")
-        + (" Id: " + node.id_)
-        + (" Node-Id: " + str(node.node_id))
-        + (" Parent-Id: " + node.parent_id)
-        + (" Scene-Id: " + node.scene_id)
-        + (" Source-Id: " + str(node.source_id))
+            node.__class__.__name__
+            + ":"
+            + (" " + node.name)
+            + (" (" + node.scene_node_type.name + ")")
+            + (" Id: " + node.id_)
+            + (" Node-Id: " + str(node.node_id))
+            + (" Parent-Id: " + node.parent_id)
+            + (" Scene-Id: " + node.scene_id)
+            + (" Source-Id: " + str(node.source_id))
     )
+
 
 async def str_nodeitem(nodeitem, indent, extended=False):
     summary_line = indent + "    +- " + str_node(nodeitem) + "\n"
     if extended:
-        visibility_line =  (
-            indent + "     | " +
-            ("locked " if nodeitem.locked else "unlocked") +
-            ("stream-invisible " if not nodeitem.stream_visible else "") +
-            ("rec-invisible " if not nodeitem.recording_visible else "") +
-            ("rec-invisible " if not nodeitem.visible else "") +
-            "\n")
+        visibility_line = (
+                indent + "     | " +
+                ("locked " if nodeitem.locked else "unlocked") +
+                ("stream-invisible " if not nodeitem.stream_visible else "") +
+                ("rec-invisible " if not nodeitem.recording_visible else "") +
+                ("rec-invisible " if not nodeitem.visible else "") +
+                "\n")
 
         crop_line = (
-            indent + "     | " +
-            ("crop: (t:%s l:%s b:%s r:%s) " % (
-                nodeitem.transform.crop.top,
-                nodeitem.transform.crop.left,
-                nodeitem.transform.crop.bottom,
-                nodeitem.transform.crop.right,
-            )) +
-            "\n")
+                indent + "     | " +
+                ("crop: (t:%s l:%s b:%s r:%s) " % (
+                    nodeitem.transform.crop.top,
+                    nodeitem.transform.crop.left,
+                    nodeitem.transform.crop.bottom,
+                    nodeitem.transform.crop.right,
+                )) +
+                "\n")
 
         position_line = (
-            indent + "     | " +
-            ("pos: (x:%s y:%s) rot: %s scale: %s" % (
-                nodeitem.transform.position.x,
-                nodeitem.transform.position.y,
-                nodeitem.transform.rotation,
-                nodeitem.transform.scale,
-            )) +
-            "\n")
+                indent + "     | " +
+                ("pos: (x:%s y:%s) rot: %s scale: %s" % (
+                    nodeitem.transform.position.x,
+                    nodeitem.transform.position.y,
+                    nodeitem.transform.rotation,
+                    nodeitem.transform.scale,
+                )) +
+                "\n")
 
         return summary_line + visibility_line + crop_line + position_line
     else:
@@ -194,7 +196,8 @@ async def str_node_tree_multiline(node, indent, extended=False):
     sub_nodes = await node.get_nodes()
     trailing_lines = "".join(
         [
-            (await str_node_tree_multiline(sub_node, indent + "    |", extended))
+            (await str_node_tree_multiline(sub_node, indent + "    |",
+                                           extended))
             for sub_node in sub_nodes
         ]
     )
@@ -209,7 +212,8 @@ async def str_node_tree_multiline_folders_first(node, indent):
     sub_nodes = await node.get_folders()
     folder_lines = "".join(
         [
-            (await str_node_tree_multiline_folders_first(sub_node, indent + "    |"))
+            (await str_node_tree_multiline_folders_first(sub_node,
+                                                         indent + "    |"))
             for sub_node in sub_nodes
         ]
     )
@@ -217,7 +221,8 @@ async def str_node_tree_multiline_folders_first(node, indent):
     sub_nodes = await node.get_items()
     item_lines = "".join(
         [
-            (await str_node_tree_multiline_folders_first(sub_node, indent + "    |"))
+            (await str_node_tree_multiline_folders_first(sub_node,
+                                                         indent + "    |"))
             for sub_node in sub_nodes
         ]
     )
@@ -227,21 +232,21 @@ async def str_node_tree_multiline_folders_first(node, indent):
 
 async def str_source_multiline(source, indent):
     return (
-        indent
-        + "+- Source:"
-        + (" " + repr(source.name))
-        + (" " + repr(source.resource_id))
-        + (" " + repr(source.source_id))
-        + ("\n" + indent + "|    ")
-        + source.type_
-        + f" {'A' if source.audio else ''}{'(muted)' if source.muted else''}"
-        + f"{'V' if source.video else ''}({source.width}x{source.height})"
-        + f" ch:{source.channel}"
-        + f"{' do-not-duplicate' if source.do_not_duplicate else''}"
-        + ("\n" + indent + "|      ")
-        + ("+- Model: " + str(await source.get_model()))
-        + ("\n" + indent + "|      ")
-        + ("+- Settings: " + str(await source.get_settings()))
+            indent
+            + "+- Source:"
+            + (" " + repr(source.name))
+            + (" " + repr(source.resource_id))
+            + (" " + repr(source.source_id))
+            + ("\n" + indent + "|    ")
+            + source.type_
+            + f" {'A' if source.audio else ''}{'(muted)' if source.muted else ''}"
+            + f"{'V' if source.video else ''}({source.width}x{source.height})"
+            + f" ch:{source.channel}"
+            + f"{' do-not-duplicate' if source.do_not_duplicate else ''}"
+            + ("\n" + indent + "|      ")
+            + ("+- Model: " + str(await source.get_model()))
+            + ("\n" + indent + "|      ")
+            + ("+- Settings: " + str(await source.get_settings()))
     )
 
 
@@ -251,39 +256,38 @@ def str_scenecollectionschemascene_multiline(sceneref, indent):
 
 def str_scenecollectionschemasources_multiline(sourceref, indent):
     return (
-        indent
-        + "+- Source reference list\n"
-        + "\n".join(
-            str_scenecollectionschemasource_multiline(subsourceref, indent + "|   ")
-            for subsourceref in sourceref
-        )
+            indent
+            + "+- Source reference list\n"
+            + "\n".join(
+        str_scenecollectionschemasource_multiline(subsourceref, indent + "|   ")
+        for subsourceref in sourceref)
     )
 
 
 def str_scenecollectionschemasource_multiline(sourceref, indent):
     return (
-        indent
-        + "+- Source Reference:"
-        + sourceref["name"]
-        + " ("
-        + sourceref["type"]
-        + ")"
+            indent
+            + "+- Source Reference:"
+            + sourceref["name"]
+            + " ("
+            + sourceref["type"]
+            + ")"
     )
 
 
 def str_scenecollectionschema_multiline(schema, indent):
     return (
-        indent
-        + "+- SceneCollectionSchema:"
-        + schema.name
-        + "\n"
-        + "\n".join(
-            str_scenecollectionschemascene_multiline(sceneref, indent + "|    ")
-            for sceneref in schema.scenes
-        )
-        + "\n"
-        + "\n".join(
-            str_scenecollectionschemasources_multiline(sourceref, indent + "|    ")
-            for sourceref in schema.sources
-        )
+            indent
+            + "+- SceneCollectionSchema:"
+            + schema.name
+            + "\n"
+            + "\n".join(
+        str_scenecollectionschemascene_multiline(sceneref, indent + "|    ")
+        for sceneref in schema.scenes
+    )
+            + "\n"
+            + "\n".join(
+        str_scenecollectionschemasources_multiline(sourceref, indent + "|    ")
+        for sourceref in schema.sources
+    )
     )
